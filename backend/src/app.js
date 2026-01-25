@@ -13,7 +13,7 @@ app.use('/api/products', require('./routes/product.routes'));
 app.use('/api/orders', require('./routes/order.routes'));
 app.use("/api/admin", require("./routes/admin.routes"));
 
-
-
+// Error Handling Middleware (Must be last)
+app.use(require("./middleware/error_middleware"));
 
 module.exports = app;

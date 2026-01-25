@@ -1,27 +1,40 @@
 const Product = require('../models/Product');
 
-exports.getProducts = async (req, res) => {
+/**
+ * @desc    Get all products
+ * @route   GET /api/products
+ * @access  Public
+ */
+exports.getProducts = async (req, res, next) => {
   try {
     const products = await Product.find();
     res.json(products);
   } catch (err) {
-    console.error('GET PRODUCTS ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.getProductById = async (req, res) => {
+/**
+ * @desc    Get single product
+ * @route   GET /api/products/:id
+ * @access  Public
+ */
+exports.getProductById = async (req, res, next) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);
   } catch (err) {
-    console.error('GET PRODUCT ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.createProduct = async (req, res) => {
+/**
+ * @desc    Create a product
+ * @route   POST /api/products
+ * @access  Private/Admin
+ */
+exports.createProduct = async (req, res, next) => {
   try {
     const { title, price, image, category } = req.body;
     if (!title || price == null) {
@@ -31,42 +44,52 @@ exports.createProduct = async (req, res) => {
     const product = await Product.create({ title, price, image, category });
     res.status(201).json(product);
   } catch (err) {
-    console.error('CREATE PRODUCT ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.updateProduct = async (req, res) => {
+/**
+ * @desc    Update a product
+ * @route   PUT /api/products/:id
+ * @access  Private/Admin
+ */
+exports.updateProduct = async (req, res, next) => {
   try {
     const updates = req.body;
     const product = await Product.findByIdAndUpdate(req.params.id, updates, { new: true });
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);
   } catch (err) {
-    console.error('UPDATE PRODUCT ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.deleteProduct = async (req, res) => {
+/**
+ * @desc    Delete a product
+ * @route   DELETE /api/products/:id
+ * @access  Private/Admin
+ */
+exports.deleteProduct = async (req, res, next) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json({ message: 'Deleted' });
   } catch (err) {
-    console.error('DELETE PRODUCT ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.getCategories = async (req, res) => {
+/**
+ * @desc    Get distinct product categories
+ * @route   GET /api/products/categories
+ * @access  Public
+ */
+exports.getCategories = async (req, res, next) => {
   try {
     const cats = await Product.distinct('category', { category: { $ne: '' } });
-    // filter out falsy values and sort
     const filtered = cats.filter(Boolean).sort();
     res.json(filtered);
   } catch (err) {
-    console.error('GET CATEGORIES ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };

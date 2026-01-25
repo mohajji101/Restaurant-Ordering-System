@@ -1,8 +1,14 @@
 const Product = require("../models/Product");
 const Order = require("../models/Order");
 const User = require("../models/User");
+const Settings = require('../models/Settings');
 
-exports.getStats = async (req, res) => {
+/**
+ * @desc    Get dashboard statistics
+ * @route   GET /api/admin/stats
+ * @access  Private/Admin
+ */
+exports.getStats = async (req, res, next) => {
   try {
     const products = await Product.countDocuments();
     const orders = await Order.countDocuments();
@@ -11,31 +17,27 @@ exports.getStats = async (req, res) => {
     const revenueAgg = await Order.aggregate([
       { $group: { _id: null, total: { $sum: "$total" } } },
     ]);
-    console.log("Admin Stats - Products:", products, "Orders:", orders, "Users:", users, "RevenueAgg:", revenueAgg);
 
     let revenue = revenueAgg[0]?.total || 0;
 
-    // Fallback: if aggregation didn't return a numeric total (e.g., stored as string), sum manually
+    // Fallback if aggregation fails
     if (!revenue || typeof revenue !== 'number') {
-      try {
-        const allOrders = await Order.find().select('total');
-        revenue = allOrders.reduce((acc, o) => {
-          const t = Number(o.total) || 0;
-          return acc + t;
-        }, 0);
-      } catch (e) {
-        console.error('REVENUE FALLBACK ERROR:', e);
-        revenue = 0;
-      }
+      const allOrders = await Order.find().select('total');
+      revenue = allOrders.reduce((acc, o) => acc + (Number(o.total) || 0), 0);
     }
 
     res.json({ products, orders, users, revenue });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    next(err);
   }
 };
 
-exports.listOrders = async (req, res) => {
+/**
+ * @desc    List all orders
+ * @route   GET /api/admin/orders
+ * @access  Private/Admin
+ */
+exports.listOrders = async (req, res, next) => {
   try {
     const orders = await Order.find()
       .populate('user', 'name email')
@@ -43,69 +45,83 @@ exports.listOrders = async (req, res) => {
       .limit(100);
     res.json(orders);
   } catch (err) {
-    console.error('LIST ORDERS ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.renameCategory = async (req, res) => {
+/**
+ * @desc    Rename a category across all products
+ * @route   POST /api/admin/categories/rename
+ * @access  Private/Admin
+ */
+exports.renameCategory = async (req, res, next) => {
   try {
     const { oldName, newName } = req.body;
     if (!oldName || !newName) return res.status(400).json({ message: 'oldName and newName required' });
 
-    const result = await require('../models/Product').updateMany({ category: oldName }, { $set: { category: newName } });
-
+    const result = await Product.updateMany({ category: oldName }, { $set: { category: newName } });
     res.json({ modifiedCount: result.modifiedCount || result.nModified || 0 });
   } catch (err) {
-    console.error('RENAME CATEGORY ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.deleteCategory = async (req, res) => {
+/**
+ * @desc    Delete a category (unassign from products)
+ * @route   POST /api/admin/categories/delete
+ * @access  Private/Admin
+ */
+exports.deleteCategory = async (req, res, next) => {
   try {
     const { name } = req.body;
     if (!name) return res.status(400).json({ message: 'name required' });
 
-    // set category to empty string for products with this category
-    const result = await require('../models/Product').updateMany({ category: name }, { $set: { category: '' } });
-
+    const result = await Product.updateMany({ category: name }, { $set: { category: '' } });
     res.json({ modifiedCount: result.modifiedCount || result.nModified || 0 });
   } catch (err) {
-    console.error('DELETE CATEGORY ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.listUsers = async (req, res) => {
+/**
+ * @desc    List all users
+ * @route   GET /api/admin/users
+ * @access  Private/Admin
+ */
+exports.listUsers = async (req, res, next) => {
   try {
     const users = await User.find().select('-password').sort({ createdAt: -1 });
     res.json(users);
   } catch (err) {
-    console.error('LIST USERS ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.getSettings = async (req, res) => {
+/**
+ * @desc    Get app settings
+ * @route   GET /api/admin/settings
+ * @access  Public
+ */
+exports.getSettings = async (req, res, next) => {
   try {
-    const Settings = require('../models/Settings');
     let settings = await Settings.findOne();
     if (!settings) {
-      settings = await Settings.create({ deliveryFee: 10, discountPercent: 0 });
+      settings = await Settings.create({ deliveryFee: 10, discountPercent: 0, minOrderForDiscount: 100 });
     }
     res.json(settings);
   } catch (err) {
-    console.error('GET SETTINGS ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.updateSettings = async (req, res) => {
+/**
+ * @desc    Update app settings
+ * @route   PUT /api/admin/settings
+ * @access  Private/Admin
+ */
+exports.updateSettings = async (req, res, next) => {
   try {
     const { deliveryFee, discountPercent, minOrderForDiscount } = req.body;
-    const Settings = require('../models/Settings');
     let settings = await Settings.findOne();
     if (!settings) {
       settings = await Settings.create({ deliveryFee: 10, discountPercent: 0, minOrderForDiscount: 100 });
@@ -118,79 +134,64 @@ exports.updateSettings = async (req, res) => {
     await settings.save();
     res.json(settings);
   } catch (err) {
-    console.error('UPDATE SETTINGS ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.updateOrderStatus = async (req, res) => {
+/**
+ * @desc    Update order status
+ * @route   PUT /api/admin/orders/status
+ * @access  Private/Admin
+ */
+exports.updateOrderStatus = async (req, res, next) => {
   try {
     const { orderId, status } = req.body;
-    const Order = require('../models/Order');
-
-    // Valid Statuses: 'Pending', 'Payment Completed', 'Processing', 'Delivered', 'Cancelled'
     const validStatuses = ['Pending', 'Payment Completed', 'Processing', 'Delivered', 'Cancelled'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      { status: status },
-      { new: true }
-    );
-
+    const order = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
     res.json(order);
   } catch (err) {
-    console.error('UPDATE ORDER STATUS ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.deleteUser = async (req, res) => {
+/**
+ * @desc    Delete a user
+ * @route   DELETE /api/admin/users/:id
+ * @access  Private/Admin
+ */
+exports.deleteUser = async (req, res, next) => {
   try {
-    const { id } = req.params;
-
-    const user = await User.findByIdAndDelete(id);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.json({ message: 'User deleted successfully' });
   } catch (err) {
-    console.error('DELETE USER ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
 
-exports.updateUser = async (req, res) => {
+/**
+ * @desc    Update a user
+ * @route   PUT /api/admin/users/:id
+ * @access  Private/Admin
+ */
+exports.updateUser = async (req, res, next) => {
   try {
-    const { id } = req.params;
     const { name, email, role } = req.body;
-
     const updateData = {};
     if (name !== undefined) updateData.name = name;
     if (email !== undefined) updateData.email = email;
     if (role !== undefined) updateData.role = role;
 
-    const user = await User.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    ).select('-password');
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
+    const user = await User.findByIdAndUpdate(req.params.id, updateData, { new: true }).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch (err) {
-    console.error('UPDATE USER ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
+    next(err);
   }
 };
-
-
