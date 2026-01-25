@@ -1,0 +1,170 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../services/api_service.dart';
+import '../auth/login_screen.dart';
+import '../../utils/theme.dart';
+import '../../widgets/custom_widgets.dart';
+
+class MyOrdersScreen extends StatelessWidget {
+  const MyOrdersScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = Provider.of<AuthProvider>(context);
+
+    if (auth.token == null) {
+      return Scaffold(
+        appBar: const BrandAppBar(title: "My Orders"),
+        body: EmptyState(
+          icon: Icons.lock_outline,
+          title: "Login Required",
+          message: "Please login to view your order history and track deliveries.",
+          actionText: "Login Now",
+          onAction: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+            );
+          },
+        ),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: const BrandAppBar(
+        title: "My Orders",
+        subtitle: "Track and manage your orders",
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: FutureBuilder<List<dynamic>>(
+              future: ApiService.getMyOrders(auth.token!),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: AppColors.primaryOrange),
+                  );
+                }
+
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return EmptyState(
+                    icon: Icons.receipt_long_outlined,
+                    title: "No orders yet",
+                    message: "You haven't placed any orders yet. Browse our menu to start ordering!",
+                    actionText: "Browse Menu",
+                    onAction: () => Navigator.pop(context),
+                  );
+                }
+
+                final orders = snapshot.data!;
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  itemCount: orders.length,
+                  itemBuilder: (context, index) {
+                    final order = orders[index];
+                    final items = (order['items'] as List?) ?? [];
+                    final firstItem = items.isNotEmpty ? items[0]['title'] : 'Unknown';
+                    final otherCount = items.length - 1;
+                    final summary = otherCount > 0 ? "$firstItem + $otherCount more" : firstItem;
+                    final dateStr = order['createdAt']?.toString().substring(0, 10) ?? 'N/A';
+                    final status = order['status'] ?? 'Processing';
+
+                    Color statusColor = AppColors.warning;
+                    IconData statusIcon = Icons.timer_outlined;
+
+                    if (status == 'Delivered') {
+                      statusColor = AppColors.success;
+                      statusIcon = Icons.check_circle_outline;
+                    } else if (status == 'Cancelled') {
+                      statusColor = AppColors.error;
+                      statusIcon = Icons.cancel_outlined;
+                    } else if (status == 'On the way') {
+                      statusColor = AppColors.info;
+                      statusIcon = Icons.local_shipping_outlined;
+                    }
+
+                    return BrandCard(
+                      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Order #${order['_id'].toString().substring(order['_id'].toString().length - 6).toUpperCase()}",
+                                    style: AppTextStyles.h4,
+                                  ),
+                                  Text(
+                                    dateStr,
+                                    style: AppTextStyles.caption,
+                                  ),
+                                ],
+                              ),
+                              StatusBadge(
+                                text: status,
+                                color: statusColor,
+                                icon: statusIcon,
+                              ),
+                            ],
+                          ),
+                          const Divider(height: AppSpacing.lg),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(AppSpacing.sm),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(AppRadius.md),
+                                ),
+                                child: const Icon(Icons.restaurant, color: AppColors.primaryBlue),
+                              ),
+                              const SizedBox(width: AppSpacing.md),
+                              Expanded(
+                                child: Text(
+                                  summary,
+                                  style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                              Text(
+                                "\$${order['total']}",
+                                style: AppTextStyles.h3.copyWith(color: AppColors.primaryBlue),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          BrandButton(
+                            text: "Order Details",
+                            onPressed: () {},
+                            variant: ButtonVariant.text,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          // Advice Card at bottom
+          const Padding(
+            padding: EdgeInsets.all(AppSpacing.md),
+            child: AdviceCard(
+              title: "Order Status Legend",
+              message: "Processing: We're preparing your food • On the way: Driver is coming • Delivered: Enjoy your meal!",
+              icon: Icons.help_outline,
+              color: AppColors.info,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
