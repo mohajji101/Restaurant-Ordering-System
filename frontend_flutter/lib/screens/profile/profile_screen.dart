@@ -73,6 +73,16 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: AppSpacing.xl),
 
+            // Theme Tips Advice Card
+            const AdviceCard(
+              title: "Theme Tips",
+              message: "Customize your app's appearance in settings to match your style!",
+              icon: Icons.palette_outlined,
+              color: AppColors.primaryBlue,
+            ),
+
+            const SizedBox(height: AppSpacing.xl),
+
             // ACTIONS
             BrandButton(
               text: "VIEW MY ORDERS",
@@ -88,15 +98,16 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: AppSpacing.md),
 
-            BrandButton(
-              text: "EDIT PROFILE",
-              onPressed: () {},
-              variant: ButtonVariant.secondary,
-              isFullWidth: true,
-              icon: Icons.edit_outlined,
-            ),
-
-            const SizedBox(height: AppSpacing.md),
+            if (auth.isAdmin) ...[
+              BrandButton(
+                text: "EDIT PROFILE",
+                onPressed: () {},
+                variant: ButtonVariant.secondary,
+                isFullWidth: true,
+                icon: Icons.edit_outlined,
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
 
             if (auth.isLoggedIn)
               BrandButton(

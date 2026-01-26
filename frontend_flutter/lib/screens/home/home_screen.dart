@@ -21,7 +21,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int index = 0;
 
-  final List<Widget> pages = const [HomeBody(), CartScreen(), ProfileScreen()];
+  late List<Widget> pages;
+
+  @override
+  void initState() {
+    super.initState();
+    pages = [
+      const HomeBody(),
+      CartScreen(onBrowseMenu: () => setState(() => index = 0)),
+      const ProfileScreen()
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +142,10 @@ class _HomeBodyState extends State<HomeBody> {
                         ),
                       ],
                     ),
+                    const Hero(
+                      tag: 'app_logo',
+                      child: Icon(Icons.restaurant_menu, color: AppColors.primaryOrange, size: 40),
+                    ),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -144,10 +158,10 @@ class _HomeBodyState extends State<HomeBody> {
                           shape: BoxShape.circle,
                           border: Border.all(color: AppColors.primaryOrange, width: 2),
                         ),
-                        child: CircleAvatar(
+                        child: const CircleAvatar(
                           radius: 25,
                           backgroundColor: AppColors.veryLightBlue,
-                          child: const Icon(
+                          child: Icon(
                             Icons.person,
                             size: 30,
                             color: AppColors.primaryBlue,

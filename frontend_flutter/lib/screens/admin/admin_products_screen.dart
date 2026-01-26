@@ -16,6 +16,7 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
   bool loading = true;
   bool isProcessing = false;
   List<dynamic> products = [];
+  List<String> categories = [];
   bool _changed = false;
 
   @override
@@ -28,9 +29,11 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
     setState(() => loading = true);
     try {
       final list = await ApiService.getProducts();
+      final cats = await ApiService.getCategories();
       if (mounted) {
         setState(() {
           products = list;
+          categories = cats.cast<String>();
           loading = false;
         });
       }
@@ -39,123 +42,150 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
     }
   }
 
-  List<String> _categoriesFromProducts() {
-    final set = <String>{};
-    for (final p in products) {
-      final c = (p['category'] ?? '').toString();
-      if (c.isNotEmpty) set.add(c);
-    }
-    final list = set.toList()..sort();
-    return list;
-  }
-
   Future<void> _manageCategories() async {
     final token = Provider.of<AuthProvider>(context, listen: false).token;
     if (token == null) return;
 
-    final categories = _categoriesFromProducts();
+    final addCtrl = TextEditingController();
 
     await showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Manage Categories'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: categories.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(AppSpacing.md),
-                  child: Text('No categories yet. Add products to create categories.'),
-                )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: categories.length,
-                  itemBuilder: (context, i) {
-                    final c = categories[i];
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(c, style: AppTextStyles.h4),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit_outlined, color: AppColors.primaryBlue),
-                            onPressed: () async {
-                              final newName = await showDialog<String>(
-                                context: context,
-                                builder: (_) {
-                                  final ctrl = TextEditingController(text: c);
-                                  return AlertDialog(
-                                    title: const Text('Rename Category'),
-                                    content: BrandTextField(
-                                      controller: ctrl,
-                                      labelText: 'Category Name',
-                                      prefixIcon: Icons.category_outlined,
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      BrandButton(
-                                        text: 'Rename',
-                                        onPressed: () => Navigator.pop(context, ctrl.text.trim()),
-                                      ),
-                                    ],
+      builder: (_) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Manage Categories'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (categories.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: Text('No categories yet.'),
+                  )
+                else
+                  Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: categories.length,
+                      itemBuilder: (context, i) {
+                        final c = categories[i];
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(c, style: AppTextStyles.h4),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined, color: AppColors.primaryBlue),
+                                onPressed: () async {
+                                  final newName = await showDialog<String>(
+                                    context: context,
+                                    builder: (_) {
+                                      final ctrl = TextEditingController(text: c);
+                                      return AlertDialog(
+                                        title: const Text('Rename Category'),
+                                        content: BrandTextField(
+                                          controller: ctrl,
+                                          labelText: 'Category Name',
+                                          prefixIcon: Icons.category_outlined,
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          BrandButton(
+                                            text: 'Rename',
+                                            onPressed: () => Navigator.pop(context, ctrl.text.trim()),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
-                                },
-                              );
 
-                              if (newName != null && newName.isNotEmpty && newName != c) {
-                                await ApiService.renameCategory(token, c, newName);
-                                _changed = true;
-                                await _load();
-                                if (context.mounted) Navigator.pop(context);
-                                _manageCategories();
-                              }
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                            onPressed: () async {
-                              final ok = await showDialog<bool>(
-                                context: context,
-                                builder: (_) => AlertDialog(
-                                  title: const Text('Delete Category'),
-                                  content: Text('Delete category "$c"? Products will remain but lose this category.'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, false),
-                                      child: const Text('Cancel'),
+                                  if (newName != null && newName.isNotEmpty && newName != c) {
+                                    await ApiService.renameCategory(token, c, newName);
+                                    _changed = true;
+                                    await _load();
+                                    setDialogState(() {}); // Refresh local list
+                                  }
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline, color: AppColors.error),
+                                onPressed: () async {
+                                  final ok = await showDialog<bool>(
+                                    context: context,
+                                    builder: (_) => AlertDialog(
+                                      title: const Text('Delete Category'),
+                                      content: Text('Delete category "$c"? Products will remain but lose this category.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context, false),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                                          onPressed: () => Navigator.pop(context, true),
+                                          child: const Text('Delete', style: TextStyle(color: AppColors.white)),
+                                        ),
+                                      ],
                                     ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-                                      onPressed: () => Navigator.pop(context, true),
-                                      child: const Text('Delete', style: TextStyle(color: AppColors.white)),
-                                    ),
-                                  ],
-                                ),
-                              );
-                              if (ok == true) {
-                                await ApiService.deleteCategory(token, c);
-                                _changed = true;
-                                await _load();
-                                if (context.mounted) Navigator.pop(context);
-                                _manageCategories();
-                              }
-                            },
+                                  );
+                                  if (ok == true) {
+                                    await ApiService.deleteCategory(token, c);
+                                    _changed = true;
+                                    await _load();
+                                    setDialogState(() {}); // Refresh local list
+                                  }
+                                },
+                              ),
+                            ],
                           ),
-                        ],
+                        );
+                      },
+                    ),
+                  ),
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.sm),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: BrandTextField(
+                          controller: addCtrl,
+                          labelText: 'New Category',
+                          prefixIcon: Icons.add,
+                        ),
                       ),
-                    );
-                  },
+                      const SizedBox(width: AppSpacing.sm),
+                      IconButton(
+                        onPressed: () async {
+                          final name = addCtrl.text.trim();
+                          if (name.isNotEmpty) {
+                            await ApiService.createCategory(token, name);
+                            addCtrl.clear();
+                            _changed = true;
+                            await _load();
+                            setDialogState(() {});
+                          }
+                        },
+                        icon: const Icon(Icons.check_circle, color: AppColors.primaryBlue),
+                      ),
+                    ],
+                  ),
                 ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+              ],
+            ),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -165,7 +195,6 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
     final priceCtrl = TextEditingController(text: product != null ? product['price'].toString() : '');
     final imageCtrl = TextEditingController(text: product?['image'] ?? '');
     String category = product?['category'] ?? '';
-    final categories = _categoriesFromProducts();
 
     final token = Provider.of<AuthProvider>(context, listen: false).token;
     if (token == null) return;
@@ -223,30 +252,9 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                       labelText: 'Category',
                       prefixIcon: const Icon(Icons.category_outlined, color: AppColors.primaryBlue),
                     ),
-                    items: [
-                      ...categories.map((c) => DropdownMenuItem(value: c, child: Text(c))),
-                      const DropdownMenuItem(value: '__add_new__', child: Text('+ Add New Category')),
-                    ],
-                    onChanged: (v) async {
-                      if (v == '__add_new__') {
-                        final newCat = await showDialog<String>(
-                          context: context,
-                          builder: (_) {
-                            final ctrl = TextEditingController();
-                            return AlertDialog(
-                              title: const Text('New Category'),
-                              content: BrandTextField(controller: ctrl, labelText: 'Category Name'),
-                              actions: [
-                                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                BrandButton(text: 'Add', onPressed: () => Navigator.pop(context, ctrl.text.trim())),
-                              ],
-                            );
-                          },
-                        );
-                        if (newCat != null && newCat.isNotEmpty) {
-                          setDialogState(() => category = newCat);
-                        }
-                      } else if (v != null) {
+                    items: categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                    onChanged: (v) {
+                      if (v != null) {
                         setDialogState(() => category = v);
                       }
                     },

@@ -287,6 +287,22 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
+  static Future<Map<String, dynamic>> createCategory(
+    String token,
+    String name,
+  ) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/admin/categories"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode({"name": name}),
+    );
+
+    return jsonDecode(response.body);
+  }
+
   static Future<Map<String, dynamic>> deleteCategory(
     String token,
     String name,

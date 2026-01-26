@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../utils/theme.dart';
+import '../providers/theme_provider.dart';
 
 /// Brand Button - Primary, Secondary, Outline variants
 class BrandButton extends StatelessWidget {
@@ -99,9 +101,13 @@ class BrandCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     final decoration = useGradient
         ? AppCardStyles.gradient
-        : (elevated ? AppCardStyles.elevated : AppCardStyles.standard);
+        : (elevated 
+            ? AppCardStyles.elevated.copyWith(color: isDark ? AppColors.cardDark : AppColors.white) 
+            : AppCardStyles.standard.copyWith(color: isDark ? AppColors.cardDark : AppColors.white));
 
     return GestureDetector(
       onTap: onTap,
@@ -186,25 +192,35 @@ class BrandAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Container(
       decoration: useGradient
           ? const BoxDecoration(gradient: AppColors.primaryGradient)
-          : const BoxDecoration(color: AppColors.primaryBlue),
+          : BoxDecoration(color: Theme.of(context).brightness == Brightness.dark ? AppColors.darkBlue : AppColors.primaryBlue),
       child: AppBar(
         title: subtitle != null
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.white)),
                   Text(
                     subtitle!,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.white70),
                   ),
                 ],
               )
-            : Text(title),
-        actions: actions,
+            : Text(title, style: const TextStyle(color: AppColors.white, fontWeight: FontWeight.bold)),
+        actions: [
+          ...?actions,
+          IconButton(
+            icon: Icon(themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.white),
+            onPressed: () => themeProvider.toggleTheme(),
+            tooltip: "Toggle Theme",
+          ),
+        ],
         leading: leading,
+        iconTheme: const IconThemeData(color: AppColors.white),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -300,6 +316,8 @@ class EmptyState extends StatelessWidget {
                 onPressed: onAction!,
                 variant: ButtonVariant.primary,
               ),
+              const SizedBox(height: AppSpacing.md),
+              const Icon(Icons.fastfood_outlined, color: AppColors.primaryOrange, size: 30),
             ],
           ],
         ),

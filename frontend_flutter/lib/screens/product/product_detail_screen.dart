@@ -18,7 +18,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   late Future<Map<String, dynamic>> productFuture;
 
   int portion = 1;
-  double spicy = 0.5;
 
   @override
   void initState() {
@@ -159,7 +158,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         // DESCRIPTION
                         Text(
                           product['description'] ?? "Enjoy our freshly prepared delicious meal made with high quality ingredients and traditional recipes.",
-                          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.darkGrey),
+                          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey),
                         ),
 
                         const SizedBox(height: AppSpacing.lg),
@@ -167,22 +166,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         // ADJUSTMENTS
                         Row(
                           children: [
-                            // Spicy
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text("Spiciness Level", style: TextStyle(fontWeight: FontWeight.bold)),
-                                  Slider(
-                                    value: spicy,
-                                    onChanged: (value) => setState(() => spicy = value),
-                                    activeColor: AppColors.primaryOrange,
-                                    inactiveColor: AppColors.veryLightBlue,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: AppSpacing.lg),
                             // Portion
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,10 +221,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text("Total Price", style: AppTextStyles.caption),
+                                  const Text("Total Price", style: AppTextStyles.caption),
                                   Text(
                                     "\$${totalPrice.toStringAsFixed(2)}",
-                                    style: AppTextStyles.h2.copyWith(color: AppColors.primaryOrange),
+                                    style: AppTextStyles.h3.copyWith(color: AppColors.primaryOrange),
                                   ),
                                 ],
                               ),

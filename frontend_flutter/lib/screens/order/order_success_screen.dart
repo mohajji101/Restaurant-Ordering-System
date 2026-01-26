@@ -32,7 +32,7 @@ class OrderSuccessScreen extends StatelessWidget {
                 const SizedBox(height: AppSpacing.xl),
 
                 // TEXT
-                const Text(
+                Text(
                   "Order Successful!",
                   style: AppTextStyles.h1,
                 ),

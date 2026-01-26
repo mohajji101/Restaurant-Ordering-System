@@ -1,8 +1,9 @@
 const router = require("express").Router();
-const { getStats, renameCategory, deleteCategory, listOrders, listUsers, getSettings, updateSettings, updateOrderStatus, deleteUser, updateUser } = require("../controllers/admin.controller");
+const { getStats, createCategory, renameCategory, deleteCategory, listOrders, listUsers, getSettings, updateSettings, updateOrderStatus, deleteUser, updateUser } = require("../controllers/admin.controller");
 const { authMiddleware, adminOnly } = require("../middleware/auth_middleware");
 
 router.get("/stats", authMiddleware, adminOnly, getStats);
+router.post('/categories', authMiddleware, adminOnly, createCategory);
 router.post('/categories/rename', authMiddleware, adminOnly, renameCategory);
 router.post('/categories/delete', authMiddleware, adminOnly, deleteCategory);
 router.get('/orders', authMiddleware, adminOnly, listOrders);

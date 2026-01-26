@@ -2,6 +2,7 @@ const Product = require("../models/Product");
 const Order = require("../models/Order");
 const User = require("../models/User");
 const Settings = require('../models/Settings');
+const Category = require("../models/Category");
 
 /**
  * @desc    Get dashboard statistics
@@ -50,7 +51,7 @@ exports.listOrders = async (req, res, next) => {
 };
 
 /**
- * @desc    Rename a category across all products
+ * @desc    Rename a category across all products and in Category model
  * @route   POST /api/admin/categories/rename
  * @access  Private/Admin
  */
@@ -59,6 +60,10 @@ exports.renameCategory = async (req, res, next) => {
     const { oldName, newName } = req.body;
     if (!oldName || !newName) return res.status(400).json({ message: 'oldName and newName required' });
 
+    // Update Category model
+    await Category.findOneAndUpdate({ name: oldName }, { name: newName });
+
+    // Update all products
     const result = await Product.updateMany({ category: oldName }, { $set: { category: newName } });
     res.json({ modifiedCount: result.modifiedCount || result.nModified || 0 });
   } catch (err) {
@@ -67,7 +72,7 @@ exports.renameCategory = async (req, res, next) => {
 };
 
 /**
- * @desc    Delete a category (unassign from products)
+ * @desc    Delete a category (unassign from products and remove from Category model)
  * @route   POST /api/admin/categories/delete
  * @access  Private/Admin
  */
@@ -76,8 +81,32 @@ exports.deleteCategory = async (req, res, next) => {
     const { name } = req.body;
     if (!name) return res.status(400).json({ message: 'name required' });
 
+    // Delete from Category model
+    await Category.findOneAndDelete({ name });
+
+    // Unassign from products
     const result = await Product.updateMany({ category: name }, { $set: { category: '' } });
     res.json({ modifiedCount: result.modifiedCount || result.nModified || 0 });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * @desc    Create a new category
+ * @route   POST /api/admin/categories
+ * @access  Private/Admin
+ */
+exports.createCategory = async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ message: 'name required' });
+
+    const exists = await Category.findOne({ name });
+    if (exists) return res.status(400).json({ message: 'Category already exists' });
+
+    const category = await Category.create({ name });
+    res.status(201).json(category);
   } catch (err) {
     next(err);
   }

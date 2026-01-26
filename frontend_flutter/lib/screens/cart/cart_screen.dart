@@ -8,7 +8,8 @@ import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({super.key});
+  final VoidCallback? onBrowseMenu;
+  const CartScreen({super.key, this.onBrowseMenu});
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -40,9 +41,8 @@ class _CartScreenState extends State<CartScreen> {
                       title: "Your cart is empty",
                       message: "Add some delicious meals to your cart and they will show up here!",
                       actionText: "Browse Menu",
-                      onAction: () {
-                        // This normally switches back to home tab if within HomeScreen context
-                        // But for now it's fine
+                      onAction: widget.onBrowseMenu ?? () {
+                        // Default behavior if no callback provided
                       },
                     )
                   : ListView.builder(

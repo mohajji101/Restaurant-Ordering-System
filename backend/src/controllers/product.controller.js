@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 
 /**
  * @desc    Get all products
@@ -80,15 +81,29 @@ exports.deleteProduct = async (req, res, next) => {
 };
 
 /**
- * @desc    Get distinct product categories
+ * @desc    Get distinct product categories from Category model (with auto-migration)
  * @route   GET /api/products/categories
  * @access  Public
  */
 exports.getCategories = async (req, res, next) => {
   try {
-    const cats = await Product.distinct('category', { category: { $ne: '' } });
-    const filtered = cats.filter(Boolean).sort();
-    res.json(filtered);
+    // 1. Get unique categories currently used in products
+    const productCats = await Product.distinct('category', { category: { $ne: '' } });
+
+    // 2. Ensure all these exist in the Category collection
+    for (const name of productCats) {
+      if (name) {
+        await Category.findOneAndUpdate(
+          { name },
+          { name },
+          { upsert: true, new: true }
+        );
+      }
+    }
+
+    // 3. Return all categories from the Category collection
+    const cats = await Category.find().sort({ name: 1 });
+    res.json(cats.map(c => c.name));
   } catch (err) {
     next(err);
   }
