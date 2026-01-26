@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import '../../services/api_service.dart';
-import '../../providers/auth_provider.dart';
+import '../../controllers/auth_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
@@ -43,7 +43,7 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
   }
 
   Future<void> _manageCategories() async {
-    final token = Provider.of<AuthProvider>(context, listen: false).token;
+    final token = Get.find<AuthController>().token;
     if (token == null) return;
 
     final addCtrl = TextEditingController();
@@ -196,7 +196,7 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
     final imageCtrl = TextEditingController(text: product?['image'] ?? '');
     String category = product?['category'] ?? '';
 
-    final token = Provider.of<AuthProvider>(context, listen: false).token;
+    final token = Get.find<AuthController>().token;
     if (token == null) return;
 
     final res = await showDialog<bool>(
@@ -300,7 +300,7 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
   }
 
   Future<void> _deleteProduct(String id, String title) async {
-    final token = Provider.of<AuthProvider>(context, listen: false).token;
+    final token = Get.find<AuthController>().token;
     if (token == null) return;
 
     final ok = await showDialog<bool>(
@@ -340,7 +340,7 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        Navigator.pop(context, _changed);
+        Get.back(result: _changed);
       },
       child: LoadingOverlay(
         isLoading: isProcessing,

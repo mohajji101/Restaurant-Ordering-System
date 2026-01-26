@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../screens/product/product_detail_screen.dart';
 import '../utils/theme.dart';
 import 'custom_widgets.dart';
@@ -21,10 +22,7 @@ class ProductCardSimple extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: id)),
-        );
+        Get.to(() => ProductDetailScreen(productId: id));
       },
       child: BrandCard(
         margin: const EdgeInsets.only(bottom: AppSpacing.md),

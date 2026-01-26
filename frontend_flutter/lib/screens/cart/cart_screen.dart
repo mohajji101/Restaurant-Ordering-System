@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/cart_provider.dart';
+import 'package:get/get.dart';
+import '../../controllers/auth_controller.dart';
+import '../../controllers/cart_controller.dart';
 import '../../services/api_service.dart';
 import '../order/order_success_screen.dart';
 import '../../utils/theme.dart';
@@ -20,7 +20,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context);
+    final cart = Get.find<CartController>();
 
     return LoadingOverlay(
       isLoading: isProcessing,
@@ -35,7 +35,7 @@ class _CartScreenState extends State<CartScreen> {
           children: [
             // 🧾 CART ITEMS
             Expanded(
-              child: cart.items.isEmpty
+              child: Obx(() => cart.items.isEmpty
                   ? EmptyState(
                       icon: Icons.shopping_cart_outlined,
                       title: "Your cart is empty",
@@ -52,7 +52,7 @@ class _CartScreenState extends State<CartScreen> {
                         final item = cart.items[index];
                         return CartItem(item: item);
                       },
-                    ),
+                    )),
             ),
 
             // 💵 SUMMARY
@@ -75,23 +75,23 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   
-                  summaryRow("Subtotal", "\$${cart.subtotal.toStringAsFixed(2)}"),
-                  summaryRow("Delivery Fee", "\$${cart.deliveryFee.toStringAsFixed(2)}"),
+                  Obx(() => summaryRow("Subtotal", "\$${cart.subtotal.toStringAsFixed(2)}")),
+                  Obx(() => summaryRow("Delivery Fee", "\$${cart.deliveryFee.toStringAsFixed(2)}")),
                   const Divider(height: 30),
-                  summaryRow(
+                  Obx(() => summaryRow(
                     "Grand Total",
                     "\$${cart.total.toStringAsFixed(2)}",
                     bold: true,
-                  ),
+                  )),
                   const SizedBox(height: AppSpacing.lg),
 
                   // ORDER BUTTON
-                  BrandButton(
+                  Obx(() => BrandButton(
                     text: "PLACE ORDER",
                     onPressed: cart.items.isEmpty
                         ? () {}
                         : () async {
-                            final auth = Provider.of<AuthProvider>(context, listen: false);
+                            final auth = Get.find<AuthController>();
                             final token = auth.token;
                             
                             setState(() => isProcessing = true);
@@ -105,26 +105,17 @@ class _CartScreenState extends State<CartScreen> {
                                 total: cart.total,
                               );
 
-                              if (context.mounted) {
-                                cart.clear();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const OrderSuccessScreen(),
-                                  ),
-                                );
-                              }
+                              cart.clear();
+                              Get.to(() => const OrderSuccessScreen());
                             } catch (e) {
-                              if (context.mounted) {
-                                BrandSnackBar.showError(context, "Order failed: $e");
-                              }
+                              BrandSnackBar.showError(context, "Order failed: $e");
                             } finally {
                               if (mounted) setState(() => isProcessing = false);
                             }
                           },
                     isFullWidth: true,
                     icon: Icons.check_circle_outline,
-                  ),
+                  )),
                 ],
               ),
             ),
@@ -143,7 +134,7 @@ class CartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context, listen: false);
+    final cart = Get.find<CartController>();
 
     return BrandCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -177,10 +168,10 @@ class CartItem extends StatelessWidget {
                   style: AppTextStyles.h4,
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                Text(
+                Obx(() => Text(
                   "\$${item.total.toStringAsFixed(2)}",
                   style: AppTextStyles.bodyMedium.copyWith(color: AppColors.primaryOrange, fontWeight: FontWeight.bold),
-                ),
+                )),
               ],
             ),
           ),
@@ -197,10 +188,10 @@ class CartItem extends StatelessWidget {
                   icon: const Icon(Icons.remove, size: 18, color: AppColors.primaryBlue),
                   onPressed: () => cart.decrease(item.id),
                 ),
-                Text(
-                  item.quantity.toString(),
+                Obx(() => Text(
+                  item.quantity.value.toString(),
                   style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
+                )),
                 IconButton(
                   icon: const Icon(Icons.add, size: 18, color: AppColors.primaryBlue),
                   onPressed: () => cart.increase(item.id),

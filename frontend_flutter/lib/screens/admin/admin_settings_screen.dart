@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import '../../services/api_service.dart';
-import '../../providers/auth_provider.dart';
+import '../../controllers/auth_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
@@ -41,7 +41,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
 
   Future<void> _save() async {
     setState(() => isSaving = true);
-    final token = Provider.of<AuthProvider>(context, listen: false).token;
+    final token = Get.find<AuthController>().token;
     if (token == null) return;
 
     final delivery = double.tryParse(deliveryCtrl.text) ?? 0;
@@ -55,9 +55,9 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         discountPercent: discount,
         minOrderForDiscount: minOrder,
       );
-      if (mounted) {
+      if (context.mounted) {
         BrandSnackBar.showSuccess(context, 'Global settings updated successfully');
-        Navigator.pop(context);
+        Get.back();
       }
     } catch (e) {
       if (mounted) {

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import 'package:get/get.dart';
 import '../../services/api_service.dart';
-import '../../providers/auth_provider.dart';
+import '../../controllers/auth_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 import '../home/home_screen.dart';
@@ -40,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (response.containsKey("token")) {
-        Provider.of<AuthProvider>(context, listen: false).setUser(
+        Get.find<AuthController>().setUser(
           token: response["token"],
           name: response["user"]["name"],
           email: response["user"]["email"],
@@ -50,15 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
         final role = response["user"]["role"] ?? "customer";
 
         if (role == 'admin') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const AdminHome()),
-          );
+          Get.offAll(() => const AdminHome());
         } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
-          );
+          Get.offAll(() => const HomeScreen());
         }
       } else {
         setState(() {
@@ -165,12 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Expanded(
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const RegisterScreen(),
-                                  ),
-                                );
+                                Get.to(() => const RegisterScreen());
                               },
                               child: Center(
                                 child: Text(
@@ -225,14 +213,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const ForgotPasswordScreen(),
-                            ),
-                          );
-                        },
+                          onPressed: () {
+                            Get.to(() => const ForgotPasswordScreen());
+                          },
                         child: Text(
                           "Forgot Password?",
                           style: AppTextStyles.link.copyWith(

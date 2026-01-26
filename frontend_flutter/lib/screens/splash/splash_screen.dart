@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
+import 'package:get/get.dart';
+import '../../controllers/auth_controller.dart';
 import '../auth/login_screen.dart';
 import '../home/home_screen.dart';
 import '../home/admin_home.dart';
@@ -42,25 +42,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // Navigate after delay
     Timer(const Duration(seconds: 3), () {
       if (mounted) {
-        final auth = Provider.of<AuthProvider>(context, listen: false);
+        final auth = Get.find<AuthController>();
         Widget nextScreen;
         
         if (auth.isLoggedIn) {
-          nextScreen = auth.role == 'admin' ? const AdminHome() : const HomeScreen();
+          nextScreen = auth.isAdmin ? const AdminHome() : const HomeScreen();
         } else {
           nextScreen = const LoginScreen();
         }
 
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 500),
-          ),
-        );
+        Get.offAll(() => nextScreen);
       }
     });
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
+import 'package:get/get.dart';
+import '../../controllers/auth_controller.dart';
 import '../auth/login_screen.dart';
 import '../order/my_orders_screen.dart';
 import '../../utils/theme.dart';
@@ -11,7 +11,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
+    final auth = Get.find<AuthController>();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -41,22 +41,23 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  Text(
+                  Obx(() => Text(
                     auth.name ?? "Guest User",
                     style: AppTextStyles.h2,
-                  ),
+                  )),
                   const SizedBox(height: AppSpacing.xs),
-                  Text(
+                  Obx(() => Text(
                     auth.email ?? "Sign in to access more features",
                     style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey),
-                  ),
+                  )),
                   const SizedBox(height: AppSpacing.lg),
-                  if (auth.isLoggedIn)
-                    const StatusBadge(
-                      text: "Verified Member",
-                      color: AppColors.success,
-                      icon: Icons.verified_user,
-                    ),
+                  Obx(() => auth.isLoggedIn
+                      ? const StatusBadge(
+                          text: "Verified Member",
+                          color: AppColors.success,
+                          icon: Icons.verified_user,
+                        )
+                      : const SizedBox.shrink()),
                 ],
               ),
             ),
@@ -83,60 +84,52 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: AppSpacing.xl),
 
-            // ACTIONS
-            BrandButton(
+            Obx(() => BrandButton(
               text: "VIEW MY ORDERS",
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const MyOrdersScreen()),
-                );
+                Get.to(() => const MyOrdersScreen());
               },
               isFullWidth: true,
               icon: Icons.receipt_long_outlined,
-            ),
+            )),
 
             const SizedBox(height: AppSpacing.md),
 
-            if (auth.isAdmin) ...[
-              BrandButton(
-                text: "EDIT PROFILE",
-                onPressed: () {},
-                variant: ButtonVariant.secondary,
-                isFullWidth: true,
-                icon: Icons.edit_outlined,
-              ),
-              const SizedBox(height: AppSpacing.md),
-            ],
+            Obx(() => Column(
+              children: [
+                if (auth.isAdmin) ...[
+                  BrandButton(
+                    text: "EDIT PROFILE",
+                    onPressed: () {},
+                    variant: ButtonVariant.secondary,
+                    isFullWidth: true,
+                    icon: Icons.edit_outlined,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                ],
 
-            if (auth.isLoggedIn)
-              BrandButton(
-                text: "LOG OUT",
-                onPressed: () {
-                  auth.logout();
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    (_) => false,
-                  );
-                },
-                variant: ButtonVariant.outline,
-                isFullWidth: true,
-                icon: Icons.logout,
-              )
-            else
-              BrandButton(
-                text: "LOG IN",
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    (_) => false,
-                  );
-                },
-                isFullWidth: true,
-                icon: Icons.login,
-              ),
+                if (auth.isLoggedIn)
+                  BrandButton(
+                    text: "LOG OUT",
+                    onPressed: () {
+                      auth.logout();
+                      Get.offAll(() => const LoginScreen());
+                    },
+                    variant: ButtonVariant.outline,
+                    isFullWidth: true,
+                    icon: Icons.logout,
+                  )
+                else
+                  BrandButton(
+                    text: "LOG IN",
+                    onPressed: () {
+                      Get.offAll(() => const LoginScreen());
+                    },
+                    isFullWidth: true,
+                    icon: Icons.login,
+                  ),
+              ],
+            )),
               
             const SizedBox(height: AppSpacing.xxl),
             

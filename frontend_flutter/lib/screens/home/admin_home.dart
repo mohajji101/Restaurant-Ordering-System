@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
+import 'package:get/get.dart';
+import '../../controllers/auth_controller.dart';
 import '../../services/api_service.dart';
 import '../auth/login_screen.dart';
 import '../admin/admin_products_screen.dart';
@@ -34,7 +34,7 @@ class _AdminHomeState extends State<AdminHome> {
   }
 
   Future<void> _loadStats() async {
-    final token = Provider.of<AuthProvider>(context, listen: false).token;
+    final token = Get.find<AuthController>().token;
     if (token == null) return;
 
     try {
@@ -67,12 +67,8 @@ class _AdminHomeState extends State<AdminHome> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              Provider.of<AuthProvider>(context, listen: false).logout();
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-                (_) => false,
-              );
+              Get.find<AuthController>().logout();
+              Get.offAll(() => const LoginScreen());
             },
           ),
         ],
@@ -108,13 +104,8 @@ class _AdminHomeState extends State<AdminHome> {
                         icon: Icons.fastfood_outlined,
                         color: AppColors.primaryOrange,
                         onTap: () async {
-                           final changed = await Navigator.push<bool?>(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AdminProductsScreen(),
-                            ),
-                          );
-                          if (changed == true) _loadStats();
+                           final changed = await Get.to<bool?>(() => const AdminProductsScreen());
+                           if (changed == true) _loadStats();
                         },
                       ),
                       _DashboardCard(
@@ -123,12 +114,7 @@ class _AdminHomeState extends State<AdminHome> {
                         icon: Icons.receipt_long_outlined,
                         color: AppColors.primaryBlue,
                         onTap: () {
-                           Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AdminOrdersScreen(),
-                            ),
-                          );
+                           Get.to(() => const AdminOrdersScreen());
                         },
                       ),
                       _DashboardCard(
@@ -137,12 +123,7 @@ class _AdminHomeState extends State<AdminHome> {
                         icon: Icons.people_outline,
                         color: AppColors.success,
                         onTap: () {
-                           Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AdminUsersScreen(),
-                            ),
-                          );
+                           Get.to(() => const AdminUsersScreen());
                         },
                       ),
                       _DashboardCard(
@@ -162,12 +143,7 @@ class _AdminHomeState extends State<AdminHome> {
                   const SizedBox(height: AppSpacing.md),
                   BrandCard(
                     onTap: () {
-                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const AdminSettingsScreen(),
-                        ),
-                      );
+                       Get.to(() => const AdminSettingsScreen());
                     },
                     child: Row(
                       children: [

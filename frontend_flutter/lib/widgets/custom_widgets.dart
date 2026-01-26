@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import '../utils/theme.dart';
-import '../providers/theme_provider.dart';
+import '../controllers/theme_controller.dart';
 
 /// Brand Button - Primary, Secondary, Outline variants
 class BrandButton extends StatelessWidget {
@@ -192,7 +192,7 @@ class BrandAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
+    final themeController = Get.find<ThemeController>();
 
     return Container(
       decoration: useGradient
@@ -213,11 +213,11 @@ class BrandAppBar extends StatelessWidget implements PreferredSizeWidget {
             : Text(title, style: const TextStyle(color: AppColors.white, fontWeight: FontWeight.bold)),
         actions: [
           ...?actions,
-          IconButton(
-            icon: Icon(themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.white),
-            onPressed: () => themeProvider.toggleTheme(),
+          Obx(() => IconButton(
+            icon: Icon(themeController.isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.white),
+            onPressed: () => themeController.toggleTheme(),
             tooltip: "Toggle Theme",
-          ),
+          )),
         ],
         leading: leading,
         iconTheme: const IconThemeData(color: AppColors.white),
@@ -226,7 +226,6 @@ class BrandAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }
-
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

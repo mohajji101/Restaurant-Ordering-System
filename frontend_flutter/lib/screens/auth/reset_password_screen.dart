@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../services/api_service.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
@@ -29,11 +30,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       if (mounted) {
         if (res.containsKey('message') && res['message'].toString().contains('successful')) {
           BrandSnackBar.showSuccess(context, 'Password reset successful! Please login.');
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => const LoginScreen()),
-            (route) => false,
-          );
+          Get.offAll(() => const LoginScreen());
         } else {
           BrandSnackBar.showError(context, res['message'] ?? 'Failed to reset password');
         }
@@ -158,11 +155,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               Center(
                 child: TextButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      (route) => false,
-                    );
+                    Get.offAll(() => const LoginScreen());
                   },
                   child: Text(
                     "Back to Login",

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
+import 'package:get/get.dart';
+import '../../controllers/auth_controller.dart';
 import '../../services/api_service.dart';
 import '../auth/login_screen.dart';
 import '../../utils/theme.dart';
@@ -11,7 +11,7 @@ class MyOrdersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
+    final auth = Get.find<AuthController>();
 
     if (auth.token == null) {
       return Scaffold(
@@ -22,10 +22,7 @@ class MyOrdersScreen extends StatelessWidget {
           message: "Please login to view your order history and track deliveries.",
           actionText: "Login Now",
           onAction: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const LoginScreen()),
-            );
+            Get.offAll(() => const LoginScreen());
           },
         ),
       );
@@ -55,7 +52,7 @@ class MyOrdersScreen extends StatelessWidget {
                     title: "No orders yet",
                     message: "You haven't placed any orders yet. Browse our menu to start ordering!",
                     actionText: "Browse Menu",
-                    onAction: () => Navigator.pop(context),
+                    onAction: () => Get.back(),
                   );
                 }
 

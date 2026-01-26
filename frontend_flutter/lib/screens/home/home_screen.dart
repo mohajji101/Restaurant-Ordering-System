@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/cart_provider.dart';
+import 'package:get/get.dart';
+import '../../controllers/auth_controller.dart';
+import '../../controllers/cart_controller.dart';
 import '../../services/api_service.dart';
 import '../cart/cart_screen.dart';
 import '../profile/profile_screen.dart';
@@ -89,12 +89,9 @@ class _HomeBodyState extends State<HomeBody> {
     super.initState();
     _loadData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final auth = Provider.of<AuthProvider>(context, listen: false);
-      if (auth.isLoggedIn && auth.role == 'admin') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const AdminHome()),
-        );
+      final auth = Get.find<AuthController>();
+      if (auth.isLoggedIn && auth.isAdmin) {
+        Get.offAll(() => const AdminHome());
       }
     });
   }
@@ -112,7 +109,7 @@ class _HomeBodyState extends State<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
+    final auth = Get.find<AuthController>();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -136,10 +133,10 @@ class _HomeBodyState extends State<HomeBody> {
                           "Welcome back!",
                           style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey),
                         ),
-                        Text(
+                        Obx(() => Text(
                           auth.isLoggedIn ? auth.name! : "Foodgo",
                           style: AppTextStyles.h2,
-                        ),
+                        )),
                       ],
                     ),
                     const Hero(
@@ -148,10 +145,7 @@ class _HomeBodyState extends State<HomeBody> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                        );
+                        Get.to(() => const ProfileScreen());
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -276,10 +270,7 @@ class _HomeBodyState extends State<HomeBody> {
 
                           return GestureDetector(
                             onTap: () {
-                              Provider.of<CartProvider>(
-                                context,
-                                listen: false,
-                              ).addItem(
+                              Get.find<CartController>().addItem(
                                 CartItemModel(
                                   id: product['_id'],
                                   title: product['title'],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../services/api_service.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
@@ -21,12 +22,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       final res = await ApiService.forgotPassword(emailCtrl.text.trim());
       if (mounted) {
         if (res.containsKey('message') && res['message'].toString().contains('Reset token sent')) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ResetPasswordScreen(email: emailCtrl.text.trim()),
-            ),
-          );
+          Get.off(() => ResetPasswordScreen(email: emailCtrl.text.trim()));
           BrandSnackBar.showSuccess(context, 'Reset code sent! Check your email or backend console.');
         } else {
           BrandSnackBar.showError(context, res['message'] ?? 'Failed to send reset code');
@@ -112,7 +108,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               // Back to Login
               Center(
                 child: TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Get.back(),
                   child: Text(
                     "Back to Login",
                     style: AppTextStyles.link.copyWith(decoration: TextDecoration.none),

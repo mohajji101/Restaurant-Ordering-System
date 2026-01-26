@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import '../../services/api_service.dart';
-import '../../providers/auth_provider.dart';
+import '../../controllers/auth_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
@@ -24,7 +24,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   }
 
   Future<void> _load() async {
-    final token = Provider.of<AuthProvider>(context, listen: false).token;
+    final token = Get.find<AuthController>().token;
     if (token == null) return;
 
     try {
@@ -41,7 +41,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   }
 
   Future<void> _deleteUser(String id) async {
-    final token = Provider.of<AuthProvider>(context, listen: false).token;
+    final token = Get.find<AuthController>().token;
     if (token == null) return;
 
     final confirm = await showDialog<bool>(
@@ -82,7 +82,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   }
 
   Future<void> _editUser(Map<String, dynamic> user) async {
-    final token = Provider.of<AuthProvider>(context, listen: false).token;
+    final token = Get.find<AuthController>().token;
     if (token == null) return;
 
     final nameController = TextEditingController(text: user['name']);

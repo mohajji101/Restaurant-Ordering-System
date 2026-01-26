@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import '../../services/api_service.dart';
-import '../../providers/auth_provider.dart';
+import '../../controllers/auth_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +24,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
   }
 
   Future<void> _load() async {
-    final token = Provider.of<AuthProvider>(context, listen: false).token;
+    final token = Get.find<AuthController>().token;
     if (token == null) return;
 
     try {
@@ -158,7 +158,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                                                 if (newStatus == null) return;
                                                 setState(() => o['status'] = newStatus);
                                                 
-                                                final auth = Provider.of<AuthProvider>(context, listen: false);
+                                                final auth = Get.find<AuthController>();
                                                 try {
                                                   await ApiService.updateOrderStatus(auth.token!, o['_id'], newStatus);
                                                   if (context.mounted) {

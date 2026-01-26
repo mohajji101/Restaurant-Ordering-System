@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../home/home_screen.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
@@ -69,10 +70,7 @@ class OrderSuccessScreen extends StatelessWidget {
                 BrandButton(
                   text: "Continue Shopping",
                   onPressed: () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => const HomeScreen()),
-                      (route) => false,
-                    );
+                    Get.offAll(() => const HomeScreen());
                   },
                   variant: ButtonVariant.outline,
                   isFullWidth: true,

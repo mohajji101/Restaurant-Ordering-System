@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/cart_provider.dart';
+import 'package:get/get.dart';
+import '../../controllers/cart_controller.dart';
 import '../../services/api_service.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
@@ -45,7 +45,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 title: "Error",
                 message: "Failed to load product details.",
                 actionText: "Go Back",
-                onAction: () => Navigator.pop(context),
+                onAction: () => Get.back(),
               );
             }
 
@@ -68,7 +68,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                         child: IconButton(
                           icon: const Icon(Icons.arrow_back, color: AppColors.white),
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Get.back(),
                         ),
                       ),
                       Container(
@@ -235,10 +235,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               child: BrandButton(
                                 text: "Add to Cart",
                                 onPressed: () {
-                                  Provider.of<CartProvider>(
-                                    context,
-                                    listen: false,
-                                  ).addItem(
+                                  Get.find<CartController>().addItem(
                                     CartItemModel(
                                       id: product['_id'],
                                       title: product['title'],
@@ -248,7 +245,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     ),
                                   );
                                   BrandSnackBar.showSuccess(context, "Added to cart");
-                                  Navigator.pop(context);
+                                  Get.back();
                                 },
                                 isFullWidth: true,
                                 icon: Icons.shopping_basket_outlined,

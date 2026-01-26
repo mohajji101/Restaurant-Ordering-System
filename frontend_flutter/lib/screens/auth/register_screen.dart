@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import 'package:get/get.dart';
 import '../../services/api_service.dart';
-import '../../providers/auth_provider.dart';
+import '../../controllers/auth_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 import '../home/home_screen.dart';
@@ -89,16 +88,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (!mounted) return;
 
       if (response.containsKey("_id")) {
-        Provider.of<AuthProvider>(context, listen: false).setUser(
+        Get.find<AuthController>().setUser(
           token: response["_id"],
           name: response["name"],
           email: response["email"],
         );
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
+        Get.offAll(() => const HomeScreen());
       } else {
         setState(() {
           errorMessage = response["message"] ?? "Registration failed";
@@ -184,12 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Expanded(
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const LoginScreen(),
-                                  ),
-                                );
+                                Get.offAll(() => const LoginScreen());
                               },
                               child: Center(
                                 child: Text(
