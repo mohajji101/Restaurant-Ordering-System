@@ -294,31 +294,34 @@ class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 80, color: AppColors.lightGrey),
-            const SizedBox(height: AppSpacing.md),
-            Text(title, style: AppTextStyles.h3.copyWith(color: AppColors.grey)),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              message,
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey),
-              textAlign: TextAlign.center,
-            ),
-            if (actionText != null && onAction != null) ...[
-              const SizedBox(height: AppSpacing.lg),
-              BrandButton(
-                text: actionText!,
-                onPressed: onAction!,
-                variant: ButtonVariant.primary,
-              ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 80, color: AppColors.lightGrey),
               const SizedBox(height: AppSpacing.md),
-              const Icon(Icons.fastfood_outlined, color: AppColors.primaryOrange, size: 30),
+              Text(title, style: AppTextStyles.h3.copyWith(color: AppColors.grey)),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                message,
+                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey),
+                textAlign: TextAlign.center,
+              ),
+              if (actionText != null && onAction != null) ...[
+                const SizedBox(height: AppSpacing.lg),
+                BrandButton(
+                  text: actionText!,
+                  onPressed: onAction!,
+                  variant: ButtonVariant.primary,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                const Icon(Icons.fastfood_outlined, color: AppColors.primaryOrange, size: 30),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

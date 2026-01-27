@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../services/api_service.dart';
-import '../auth/login_screen.dart';
+import '../order/order_detail_screen.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
@@ -139,7 +139,9 @@ class MyOrdersScreen extends StatelessWidget {
                           const SizedBox(height: AppSpacing.md),
                           BrandButton(
                             text: "Order Details",
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.to(() => OrderDetailScreen(order: order));
+                            },
                             variant: ButtonVariant.text,
                           ),
                         ],

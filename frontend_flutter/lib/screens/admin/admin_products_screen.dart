@@ -205,61 +205,67 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
         builder: (context, setDialogState) {
           return AlertDialog(
             title: Text(product == null ? 'Add New Product' : 'Edit Product'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  BrandTextField(
-                    controller: titleCtrl,
-                    labelText: 'Product Title',
-                    prefixIcon: Icons.fastfood_outlined,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  BrandTextField(
-                    controller: priceCtrl,
-                    labelText: 'Price',
-                    prefixText: '\$ ',
-                    keyboardType: TextInputType.number,
-                    prefixIcon: Icons.attach_money,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  BrandTextField(
-                    controller: imageCtrl,
-                    labelText: 'Image URL',
-                    prefixIcon: Icons.image_outlined,
-                  ),
-                  if (imageCtrl.text.isNotEmpty) ...[
-                    const SizedBox(height: AppSpacing.sm),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                      child: Image.network(
-                        imageCtrl.text,
-                        height: 100,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
+            content: SizedBox(
+              width: 400, // Stabilize layout on Web/Desktop
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BrandTextField(
+                      controller: titleCtrl,
+                      labelText: 'Product Title',
+                      prefixIcon: Icons.fastfood_outlined,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    BrandTextField(
+                      controller: priceCtrl,
+                      labelText: 'Price',
+                      prefixText: '\$ ',
+                      keyboardType: TextInputType.number,
+                      prefixIcon: Icons.attach_money,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    BrandTextField(
+                      controller: imageCtrl,
+                      labelText: 'Image URL',
+                      prefixIcon: Icons.image_outlined,
+                    ),
+                    if (imageCtrl.text.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        child: Image.network(
+                          imageCtrl.text,
                           height: 100,
-                          color: AppColors.veryLightBlue,
-                          child: const Icon(Icons.broken_image, color: AppColors.primaryBlue),
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            height: 100,
+                            color: AppColors.veryLightBlue,
+                            child: const Icon(Icons.broken_image, color: AppColors.primaryBlue),
+                          ),
                         ),
                       ),
+                    ],
+                    const SizedBox(height: AppSpacing.md),
+                    DropdownButtonFormField<String>(
+                      // Ensure the initial value exists in the categories list to prevent a Flutter assertion crash
+                      value: categories.contains(category) 
+                          ? category 
+                          : (categories.isNotEmpty ? categories.first : null),
+                      decoration: AppInputDecoration.standard(
+                        labelText: 'Category',
+                        prefixIcon: const Icon(Icons.category_outlined, color: AppColors.primaryBlue),
+                      ),
+                      items: categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                      onChanged: (v) {
+                        if (v != null) {
+                          setDialogState(() => category = v);
+                        }
+                      },
                     ),
                   ],
-                  const SizedBox(height: AppSpacing.md),
-                  DropdownButtonFormField<String>(
-                    initialValue: category.isEmpty && categories.isNotEmpty ? categories.first : (category.isEmpty ? null : category),
-                    decoration: AppInputDecoration.standard(
-                      labelText: 'Category',
-                      prefixIcon: const Icon(Icons.category_outlined, color: AppColors.primaryBlue),
-                    ),
-                    items: categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
-                    onChanged: (v) {
-                      if (v != null) {
-                        setDialogState(() => category = v);
-                      }
-                    },
-                  ),
-                ],
+                ),
               ),
             ),
             actions: [

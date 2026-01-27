@@ -84,14 +84,14 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: AppSpacing.xl),
 
-            Obx(() => BrandButton(
+            BrandButton(
               text: "VIEW MY ORDERS",
               onPressed: () {
                 Get.to(() => const MyOrdersScreen());
               },
               isFullWidth: true,
               icon: Icons.receipt_long_outlined,
-            )),
+            ),
 
             const SizedBox(height: AppSpacing.md),
 
