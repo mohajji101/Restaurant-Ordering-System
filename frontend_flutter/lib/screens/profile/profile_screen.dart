@@ -87,7 +87,7 @@ class ProfileScreen extends StatelessWidget {
             BrandButton(
               text: "VIEW MY ORDERS",
               onPressed: () {
-                Get.to(() => const MyOrdersScreen());
+                Get.to(() => MyOrdersScreen());
               },
               isFullWidth: true,
               icon: Icons.receipt_long_outlined,

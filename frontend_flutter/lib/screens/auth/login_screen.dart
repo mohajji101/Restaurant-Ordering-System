@@ -49,9 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
         final role = response["user"]["role"] ?? "customer";
 
         if (role == 'admin') {
-          Get.offAll(() => const AdminHome());
+          Get.offAll(() => AdminHome());
         } else {
-          Get.offAll(() => const HomeScreen());
+          Get.offAll(() => HomeScreen());
         }
       } else {
         setState(() {
@@ -158,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Expanded(
                             child: GestureDetector(
                               onTap: () {
-                                Get.to(() => const RegisterScreen());
+                                Get.to(() => RegisterScreen());
                               },
                               child: Center(
                                 child: Text(
@@ -214,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                           onPressed: () {
-                            Get.to(() => const ForgotPasswordScreen());
+                            Get.to(() => ForgotPasswordScreen());
                           },
                         child: Text(
                           "Forgot Password?",

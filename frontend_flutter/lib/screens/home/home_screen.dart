@@ -91,7 +91,7 @@ class _HomeBodyState extends State<HomeBody> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final auth = Get.find<AuthController>();
       if (auth.isLoggedIn && auth.isAdmin) {
-        Get.offAll(() => const AdminHome());
+        Get.offAll(() => AdminHome());
       }
     });
   }

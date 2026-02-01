@@ -68,7 +68,7 @@ class _AdminHomeState extends State<AdminHome> {
             icon: const Icon(Icons.logout),
             onPressed: () {
               Get.find<AuthController>().logout();
-              Get.offAll(() => const LoginScreen());
+              Get.offAll(() => LoginScreen());
             },
           ),
         ],
@@ -104,7 +104,7 @@ class _AdminHomeState extends State<AdminHome> {
                         icon: Icons.fastfood_outlined,
                         color: AppColors.primaryOrange,
                         onTap: () async {
-                           final changed = await Get.to<bool?>(() => const AdminProductsScreen());
+                           final changed = await Get.to<bool?>(() => AdminProductsScreen());
                            if (changed == true) _loadStats();
                         },
                       ),
@@ -114,7 +114,7 @@ class _AdminHomeState extends State<AdminHome> {
                         icon: Icons.receipt_long_outlined,
                         color: AppColors.primaryBlue,
                         onTap: () {
-                           Get.to(() => const AdminOrdersScreen());
+                           Get.to(() => AdminOrdersScreen());
                         },
                       ),
                       _DashboardCard(
@@ -123,7 +123,7 @@ class _AdminHomeState extends State<AdminHome> {
                         icon: Icons.people_outline,
                         color: AppColors.success,
                         onTap: () {
-                           Get.to(() => const AdminUsersScreen());
+                           Get.to(() => AdminUsersScreen());
                         },
                       ),
                       _DashboardCard(
@@ -143,7 +143,7 @@ class _AdminHomeState extends State<AdminHome> {
                   const SizedBox(height: AppSpacing.md),
                   BrandCard(
                     onTap: () {
-                       Get.to(() => const AdminSettingsScreen());
+                       Get.to(() => AdminSettingsScreen());
                     },
                     child: Row(
                       children: [

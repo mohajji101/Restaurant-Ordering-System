@@ -80,10 +80,30 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                               date = DateTime.tryParse(dateStr);
                             }
 
-                            Color statusColor = AppColors.warning;
-                            if (status == 'Delivered') statusColor = AppColors.success;
-                            if (status == 'Cancelled') statusColor = AppColors.error;
-                            if (status == 'Processing') statusColor = AppColors.info;
+                            Color statusColor;
+                            IconData statusIcon;
+                            switch (status) {
+                              case 'Payment Completed':
+                                statusColor = AppColors.primaryBlue;
+                                statusIcon = Icons.paid_outlined;
+                                break;
+                              case 'Processing':
+                                statusColor = AppColors.info;
+                                statusIcon = Icons.sync_outlined;
+                                break;
+                              case 'Delivered':
+                                statusColor = AppColors.success;
+                                statusIcon = Icons.check_circle_outline;
+                                break;
+                              case 'Cancelled':
+                                statusColor = AppColors.error;
+                                statusIcon = Icons.cancel_outlined;
+                                break;
+                              case 'Pending':
+                              default:
+                                statusColor = AppColors.warning;
+                                statusIcon = Icons.hourglass_empty_outlined;
+                            }
 
                             return BrandCard(
                               margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -102,7 +122,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                                         ],
                                       ),
                                     ),
-                                    StatusBadge(text: status, color: statusColor),
+                                    StatusBadge(text: status, color: statusColor, icon: statusIcon),
                                   ],
                                 ),
                                 subtitle: Padding(

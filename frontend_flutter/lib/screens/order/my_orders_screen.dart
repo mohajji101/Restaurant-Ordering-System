@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../services/api_service.dart';
 import '../order/order_detail_screen.dart';
+import '../auth/login_screen.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
@@ -22,7 +23,7 @@ class MyOrdersScreen extends StatelessWidget {
           message: "Please login to view your order history and track deliveries.",
           actionText: "Login Now",
           onAction: () {
-            Get.offAll(() => const LoginScreen());
+            Get.offAll(() => LoginScreen());
           },
         ),
       );
@@ -70,18 +71,33 @@ class MyOrdersScreen extends StatelessWidget {
                     final dateStr = order['createdAt']?.toString().substring(0, 10) ?? 'N/A';
                     final status = order['status'] ?? 'Processing';
 
-                    Color statusColor = AppColors.warning;
-                    IconData statusIcon = Icons.timer_outlined;
-
-                    if (status == 'Delivered') {
-                      statusColor = AppColors.success;
-                      statusIcon = Icons.check_circle_outline;
-                    } else if (status == 'Cancelled') {
-                      statusColor = AppColors.error;
-                      statusIcon = Icons.cancel_outlined;
-                    } else if (status == 'On the way') {
-                      statusColor = AppColors.info;
-                      statusIcon = Icons.local_shipping_outlined;
+                    Color statusColor;
+                    IconData statusIcon;
+                    switch (status) {
+                      case 'Payment Completed':
+                        statusColor = AppColors.primaryBlue;
+                        statusIcon = Icons.paid_outlined;
+                        break;
+                      case 'Processing':
+                        statusColor = AppColors.info;
+                        statusIcon = Icons.sync_outlined;
+                        break;
+                      case 'On the way':
+                        statusColor = AppColors.info;
+                        statusIcon = Icons.local_shipping_outlined;
+                        break;
+                      case 'Delivered':
+                        statusColor = AppColors.success;
+                        statusIcon = Icons.check_circle_outline;
+                        break;
+                      case 'Cancelled':
+                        statusColor = AppColors.error;
+                        statusIcon = Icons.cancel_outlined;
+                        break;
+                      case 'Pending':
+                      default:
+                        statusColor = AppColors.warning;
+                        statusIcon = Icons.hourglass_empty_outlined;
                     }
 
                     return BrandCard(

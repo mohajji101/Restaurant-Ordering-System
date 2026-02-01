@@ -106,7 +106,7 @@ class _CartScreenState extends State<CartScreen> {
                               );
 
                               cart.clear();
-                              Get.to(() => const OrderSuccessScreen());
+                              Get.to(() => OrderSuccessScreen());
                             } catch (e) {
                               BrandSnackBar.showError(context, "Order failed: $e");
                             } finally {

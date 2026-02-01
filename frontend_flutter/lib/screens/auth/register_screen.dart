@@ -94,7 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           email: response["email"],
         );
 
-        Get.offAll(() => const HomeScreen());
+        Get.offAll(() => HomeScreen());
       } else {
         setState(() {
           errorMessage = response["message"] ?? "Registration failed";
@@ -180,7 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Expanded(
                             child: GestureDetector(
                               onTap: () {
-                                Get.offAll(() => const LoginScreen());
+                                Get.offAll(() => LoginScreen());
                               },
                               child: Center(
                                 child: Text(

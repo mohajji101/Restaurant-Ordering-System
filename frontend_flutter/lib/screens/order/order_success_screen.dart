@@ -70,7 +70,7 @@ class OrderSuccessScreen extends StatelessWidget {
                 BrandButton(
                   text: "Continue Shopping",
                   onPressed: () {
-                    Get.offAll(() => const HomeScreen());
+                    Get.offAll(() => HomeScreen());
                   },
                   variant: ButtonVariant.outline,
                   isFullWidth: true,

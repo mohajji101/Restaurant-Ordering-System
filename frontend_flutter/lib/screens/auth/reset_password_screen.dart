@@ -30,7 +30,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       if (mounted) {
         if (res.containsKey('message') && res['message'].toString().contains('successful')) {
           BrandSnackBar.showSuccess(context, 'Password reset successful! Please login.');
-          Get.offAll(() => const LoginScreen());
+          Get.offAll(() => LoginScreen());
         } else {
           BrandSnackBar.showError(context, res['message'] ?? 'Failed to reset password');
         }
@@ -155,7 +155,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               Center(
                 child: TextButton(
                   onPressed: () {
-                    Get.offAll(() => const LoginScreen());
+                    Get.offAll(() => LoginScreen());
                   },
                   child: Text(
                     "Back to Login",
