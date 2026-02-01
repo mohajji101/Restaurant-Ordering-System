@@ -83,9 +83,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     children: [
                       // Logo
                       Image.asset(
-                        "assets/logo/ress.png",
+                        "assets/logo/Marti Logo.png",
                         width: 200,
-                        color: AppColors.white,
+                        // Removed color filter to show full brand colors
                         errorBuilder: (context, error, stackTrace) {
                           // Fallback if image doesn't exist
                           return const Icon(
@@ -98,7 +98,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       const SizedBox(height: AppSpacing.lg),
                       // App Name
                       const Text(
-                        'Restaurant Ordering',
+                        'Marti Soor Restaurant',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,

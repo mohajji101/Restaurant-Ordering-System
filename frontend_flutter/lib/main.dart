@@ -28,7 +28,8 @@ class MyApp extends StatelessWidget {
     final themeController = Get.find<ThemeController>();
 
     return Obx(() => GetMaterialApp(
-       useInheritedMediaQuery: true,
+      title: 'Marti Soor Restaurant',
+      useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,

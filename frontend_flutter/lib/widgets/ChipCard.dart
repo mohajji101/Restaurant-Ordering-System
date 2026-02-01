@@ -9,12 +9,14 @@ class CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.only(right: AppSpacing.sm),
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
         gradient: selected ? AppColors.orangeGradient : null,
-        color: selected ? null : AppColors.veryLightBlue,
+        color: selected ? null : (isDark ? AppColors.darkBlue : AppColors.veryLightBlue),
         borderRadius: BorderRadius.circular(AppRadius.round),
         boxShadow: selected ? [AppShadows.sm] : null,
       ),
@@ -22,7 +24,7 @@ class CategoryChip extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-          color: selected ? AppColors.white : AppColors.primaryBlue,
+          color: selected ? AppColors.white : (isDark ? Colors.white70 : AppColors.primaryBlue),
           fontWeight: FontWeight.bold,
           fontSize: 14,
         ),

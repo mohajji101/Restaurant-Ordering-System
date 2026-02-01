@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/cart_controller.dart';
+import '../../controllers/theme_controller.dart';
 import '../../services/api_service.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
@@ -24,11 +25,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     super.initState();
     productFuture = ApiService.getProductById(widget.productId);
   }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.primaryBlue,
+    final themeController = Get.find<ThemeController>();
+
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
+
+      return Scaffold(
+        backgroundColor: isDark ? AppColors.darkBackground : AppColors.primaryBlue,
       body: SafeArea(
         child: FutureBuilder<Map<String, dynamic>>(
           future: productFuture,
@@ -117,9 +122,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   flex: 3,
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.xl, AppSpacing.lg, AppSpacing.lg),
-                    decoration: const BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.vertical(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(AppRadius.xl * 2),
                       ),
                     ),
@@ -262,6 +267,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           },
         ),
       ),
-    );
+      );
+    });
   }
 }

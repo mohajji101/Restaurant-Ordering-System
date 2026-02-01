@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../services/api_service.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/theme_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
@@ -342,17 +343,22 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        Get.back(result: _changed);
-      },
-      child: LoadingOverlay(
-        isLoading: isProcessing,
-        child: Scaffold(
-          backgroundColor: AppColors.background,
-          appBar: BrandAppBar(
+    final themeController = Get.find<ThemeController>();
+
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
+
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          Get.back(result: _changed);
+        },
+        child: LoadingOverlay(
+          isLoading: isProcessing,
+          child: Scaffold(
+            backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
+            appBar: BrandAppBar(
             title: 'Menu Management',
             subtitle: 'Catalog of your restaurant items',
             actions: [
@@ -465,5 +471,6 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
         ),
       ),
     );
+    });
   }
 }

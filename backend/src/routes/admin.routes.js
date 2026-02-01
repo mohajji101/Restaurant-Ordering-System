@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { getStats, createCategory, renameCategory, deleteCategory, listOrders, listUsers, getSettings, updateSettings, updateOrderStatus, deleteUser, updateUser } = require("../controllers/admin.controller");
+const { getStats, createCategory, renameCategory, deleteCategory, listOrders, listUsers, getSettings, updateSettings, updateOrderStatus, deleteUser, updateUser, createUser } = require("../controllers/admin.controller");
 const { authMiddleware, adminOnly } = require("../middleware/auth_middleware");
 
 router.get("/stats", authMiddleware, adminOnly, getStats);
@@ -21,5 +21,6 @@ router.get('/settings', getSettings); // Making it public accessible on /api/adm
 router.put('/settings', authMiddleware, adminOnly, updateSettings);
 router.delete('/users/:id', authMiddleware, adminOnly, deleteUser);
 router.put('/users/:id', authMiddleware, adminOnly, updateUser);
+router.post('/users', authMiddleware, adminOnly, createUser);
 
 module.exports = router;

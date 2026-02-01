@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/theme_controller.dart';
 import '../../services/api_service.dart';
 import '../order/order_detail_screen.dart';
 import '../auth/login_screen.dart';
@@ -13,10 +14,15 @@ class MyOrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = Get.find<AuthController>();
+    final themeController = Get.find<ThemeController>();
 
-    if (auth.token == null) {
-      return Scaffold(
-        appBar: const BrandAppBar(title: "My Orders"),
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
+
+      if (auth.token == null) {
+        return Scaffold(
+          backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
+          appBar: const BrandAppBar(title: "My Orders"),
         body: EmptyState(
           icon: Icons.lock_outline,
           title: "Login Required",
@@ -29,8 +35,8 @@ class MyOrdersScreen extends StatelessWidget {
       );
     }
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
+      return Scaffold(
+        backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: const BrandAppBar(
         title: "My Orders",
         subtitle: "Track and manage your orders",
@@ -180,6 +186,7 @@ class MyOrdersScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
+      );
+    });
   }
 }

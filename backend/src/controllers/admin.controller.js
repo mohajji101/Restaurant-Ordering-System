@@ -3,6 +3,42 @@ const Order = require("../models/Order");
 const User = require("../models/User");
 const Settings = require('../models/Settings');
 const Category = require("../models/Category");
+const bcrypt = require("bcryptjs");
+
+/**
+ * @desc    Create a new user
+ * @route   POST /api/admin/users
+ * @access  Private/Admin
+ */
+exports.createUser = async (req, res, next) => {
+  try {
+    const { name, email, password, role } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Please provide all required fields' });
+    }
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: role || 'customer'
+    });
+
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.status(201).json(userResponse);
+  } catch (err) {
+    next(err);
+  }
+};
 
 /**
  * @desc    Get dashboard statistics

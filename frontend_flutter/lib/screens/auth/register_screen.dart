@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../services/api_service.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/theme_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 import '../home/home_screen.dart';
@@ -115,7 +116,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final themeController = Get.find<ThemeController>();
+
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
+
+      return Scaffold(
+        backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -129,15 +136,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Column(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
                           color: AppColors.white.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
-                          Icons.person_add,
-                          size: 50,
-                          color: AppColors.white,
+                        child: Image.asset(
+                          "assets/logo/Marti Logo.png",
+                          width: 80,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.md),
@@ -354,6 +360,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
       ),
-    );
+      );
+    });
   }
 }

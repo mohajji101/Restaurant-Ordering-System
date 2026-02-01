@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/cart_controller.dart';
+import '../../controllers/theme_controller.dart';
 import '../../services/api_service.dart';
 import '../cart/cart_screen.dart';
 import '../profile/profile_screen.dart';
@@ -35,38 +36,51 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    final themeController = Get.find<ThemeController>();
 
-      // 🔻 BOTTOM NAVIGATION
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [AppShadows.lg],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: index,
-          selectedItemColor: AppColors.primaryOrange,
-          unselectedItemColor: AppColors.grey,
-          backgroundColor: AppColors.white,
-          type: BottomNavigationBarType.fixed,
-          onTap: (value) {
-            setState(() {
-              index = value;
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart_outlined),
-              label: "Cart",
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: "Profile"),
-          ],
-        ),
-      ),
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
 
-      body: pages[index],
-    );
+      return Scaffold(
+        backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
+
+        // 🔻 BOTTOM NAVIGATION
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            boxShadow: [AppShadows.lg],
+          ),
+          child: BottomNavigationBar(
+            currentIndex: index,
+            selectedItemColor: AppColors.primaryOrange,
+            unselectedItemColor: AppColors.grey,
+            backgroundColor: isDark ? AppColors.darkBlue : AppColors.white,
+            type: BottomNavigationBarType.fixed,
+            onTap: (value) {
+              setState(() {
+                index = value;
+              });
+            },
+            items: [
+              BottomNavigationBarItem(
+                icon: Image.asset(
+                  "assets/logo/Marti Logo.png",
+                  width: 24,
+                  height: 24,
+                ),
+                label: "Home",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.shopping_cart_outlined),
+                label: "Cart",
+              ),
+              BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: "Profile"),
+            ],
+          ),
+        ),
+
+        body: pages[index],
+      );
+    });
   }
 }
 
@@ -110,9 +124,13 @@ class _HomeBodyState extends State<HomeBody> {
   @override
   Widget build(BuildContext context) {
     final auth = Get.find<AuthController>();
+    final themeController = Get.find<ThemeController>();
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
+
+      return Scaffold(
+        backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _handleRefresh,
@@ -134,14 +152,17 @@ class _HomeBodyState extends State<HomeBody> {
                           style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey),
                         ),
                         Obx(() => Text(
-                          auth.isLoggedIn ? auth.name! : "Foodgo",
+                          auth.isLoggedIn ? auth.name! : "Marti Soor",
                           style: AppTextStyles.h2,
                         )),
                       ],
                     ),
-                    const Hero(
+                    Hero(
                       tag: 'app_logo',
-                      child: Icon(Icons.restaurant_menu, color: AppColors.primaryOrange, size: 40),
+                      child: Image.asset(
+                        "assets/logo/Marti Logo.png",
+                        width: 70, // Adjusted size for header
+                      ),
                     ),
                     GestureDetector(
                       onTap: () {
@@ -152,13 +173,13 @@ class _HomeBodyState extends State<HomeBody> {
                           shape: BoxShape.circle,
                           border: Border.all(color: AppColors.primaryOrange, width: 2),
                         ),
-                        child: const CircleAvatar(
+                        child: CircleAvatar(
                           radius: 25,
-                          backgroundColor: AppColors.veryLightBlue,
+                          backgroundColor: isDark ? AppColors.darkBlue : AppColors.veryLightBlue,
                           child: Icon(
                             Icons.person,
                             size: 30,
-                            color: AppColors.primaryBlue,
+                            color: isDark ? AppColors.primaryOrange : AppColors.primaryBlue,
                           ),
                         ),
                       ),
@@ -298,6 +319,7 @@ class _HomeBodyState extends State<HomeBody> {
           ),
         ),
       ),
-    );
+      );
+    });
   }
 }

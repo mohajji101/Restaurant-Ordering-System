@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../controllers/theme_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
@@ -52,8 +53,13 @@ class OrderDetailScreen extends StatelessWidget {
         statusIcon = Icons.hourglass_empty_outlined;
     }
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    final themeController = Get.find<ThemeController>();
+
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
+
+      return Scaffold(
+        backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: BrandAppBar(
         title: "Order Details",
         subtitle: "Order #${order['_id'].toString().substring(order['_id'].toString().length - 6).toUpperCase()}",
@@ -161,7 +167,7 @@ class OrderDetailScreen extends StatelessWidget {
             // Help Advice
             const AdviceCard(
               title: "Need help?",
-              message: "If you have any issues with your order, please contact our support team at support@foodgo.com",
+              message: "If you have any issues with your order, please contact our support team at support@martisoor.com",
               icon: Icons.help_outline,
               color: AppColors.info,
             ),
@@ -169,6 +175,7 @@ class OrderDetailScreen extends StatelessWidget {
         ),
       ),
     );
+    });
   }
 
   Widget _summaryRow(String title, String value, {bool bold = false}) {

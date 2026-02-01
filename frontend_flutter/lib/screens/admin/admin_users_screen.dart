@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../services/api_service.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/theme_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
@@ -112,7 +113,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 DropdownButtonFormField<String>(
-                  initialValue: selectedRole,
+                  value: selectedRole,
                   decoration: AppInputDecoration.standard(
                     labelText: 'System Role',
                     prefixIcon: const Icon(Icons.admin_panel_settings_outlined, color: AppColors.primaryBlue),
@@ -172,15 +173,140 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     }
   }
 
+  Future<void> _addUser() async {
+    final token = Get.find<AuthController>().token;
+    if (token == null) return;
+
+    final nameController = TextEditingController();
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+    String selectedRole = 'customer';
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Create New User'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BrandTextField(
+                  controller: nameController,
+                  labelText: 'Full Name',
+                  prefixIcon: Icons.person_outline,
+                  hintText: 'Enter user full name',
+                ),
+                const SizedBox(height: AppSpacing.md),
+                BrandTextField(
+                  controller: emailController,
+                  labelText: 'Email Address',
+                  prefixIcon: Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
+                  hintText: 'Enter user email',
+                ),
+                const SizedBox(height: AppSpacing.md),
+                BrandTextField(
+                  controller: passwordController,
+                  labelText: 'Initial Password',
+                  prefixIcon: Icons.lock_outline,
+                  obscureText: true,
+                  hintText: 'Set a temporary password',
+                ),
+                const SizedBox(height: AppSpacing.md),
+                DropdownButtonFormField<String>(
+                  value: selectedRole,
+                  decoration: AppInputDecoration.standard(
+                    labelText: 'System Role',
+                    prefixIcon: const Icon(Icons.admin_panel_settings_outlined, color: AppColors.primaryBlue),
+                  ),
+                  items: ['customer', 'admin'].map((role) {
+                    return DropdownMenuItem(
+                      value: role,
+                      child: Text(role.toUpperCase()),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setDialogState(() {
+                        selectedRole = value;
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            BrandButton(
+              text: 'Create User',
+              onPressed: () {
+                if (nameController.text.isEmpty || emailController.text.isEmpty || passwordController.text.isEmpty) {
+                  BrandSnackBar.showError(context, 'Please fill all fields');
+                  return;
+                }
+                Navigator.pop(context, true);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result != true) return;
+
+    setState(() => isProcessing = true);
+    try {
+      final response = await ApiService.createUser(
+        token,
+        name: nameController.text,
+        email: emailController.text,
+        password: passwordController.text,
+        role: selectedRole,
+      );
+      
+      if (mounted) {
+        if (response.containsKey('_id') || response.containsKey('status') && response['status'] == 'success') {
+          BrandSnackBar.showSuccess(context, 'User created successfully');
+          _load();
+        } else {
+          BrandSnackBar.showError(context, response['message'] ?? 'Failed to create user');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        BrandSnackBar.showError(context, 'Error creating user: $e');
+      }
+    } finally {
+      if (mounted) setState(() => isProcessing = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return LoadingOverlay(
-      isLoading: isProcessing,
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: const BrandAppBar(
+    final themeController = Get.find<ThemeController>();
+
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
+
+      return LoadingOverlay(
+        isLoading: isProcessing,
+        child: Scaffold(
+          backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
+        appBar: BrandAppBar(
           title: 'User Management',
           subtitle: 'Manage roles and access permissions',
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.person_add_outlined),
+              onPressed: _addUser,
+              tooltip: 'Add New User',
+            ),
+          ],
         ),
         body: Column(
           children: [
@@ -206,10 +332,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                               child: ListTile(
                                 contentPadding: EdgeInsets.zero,
                                 leading: CircleAvatar(
-                                  backgroundColor: isItemAdmin ? AppColors.primaryOrange.withValues(alpha: 0.2) : AppColors.veryLightBlue,
+                                  backgroundColor: isItemAdmin 
+                                      ? AppColors.primaryOrange.withValues(alpha: 0.2) 
+                                      : (Theme.of(context).brightness == Brightness.dark ? AppColors.darkBlue : AppColors.veryLightBlue),
                                   child: Icon(
                                     isItemAdmin ? Icons.admin_panel_settings : Icons.person,
-                                    color: isItemAdmin ? AppColors.primaryOrange : AppColors.primaryBlue,
+                                    color: isItemAdmin ? AppColors.primaryOrange : (Theme.of(context).brightness == Brightness.dark ? AppColors.lightOrange : AppColors.primaryBlue),
                                   ),
                                 ),
                                 title: Text(u['name'] ?? 'Unknown User', style: AppTextStyles.h4),
@@ -250,6 +378,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           ],
         ),
       ),
-    );
+      );
+    });
   }
 }

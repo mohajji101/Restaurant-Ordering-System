@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/cart_controller.dart';
+import '../../controllers/theme_controller.dart';
 import '../../services/api_service.dart';
 import '../order/order_success_screen.dart';
 import '../../utils/theme.dart';
@@ -21,12 +22,16 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final cart = Get.find<CartController>();
+    final themeController = Get.find<ThemeController>();
 
-    return LoadingOverlay(
-      isLoading: isProcessing,
-      message: "Processing your order...",
-      child: Scaffold(
-        backgroundColor: AppColors.background,
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
+
+      return LoadingOverlay(
+        isLoading: isProcessing,
+        message: "Processing your order...",
+        child: Scaffold(
+          backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
         appBar: const BrandAppBar(
           title: "My Cart",
           subtitle: "Confirm your order details",
@@ -55,11 +60,10 @@ class _CartScreenState extends State<CartScreen> {
                     )),
             ),
 
-            // 💵 SUMMARY
             Container(
               padding: const EdgeInsets.all(AppSpacing.lg),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: isDark ? AppColors.darkBlue : AppColors.white,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
                 boxShadow: [AppShadows.lg],
               ),
@@ -123,6 +127,7 @@ class _CartScreenState extends State<CartScreen> {
         ),
       ),
     );
+    });
   }
 }
 
@@ -178,7 +183,7 @@ class CartItem extends StatelessWidget {
 
           Container(
             decoration: BoxDecoration(
-              color: AppColors.veryLightBlue,
+              color: Theme.of(context).brightness == Brightness.dark ? AppColors.darkBlue : AppColors.veryLightBlue,
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Row(

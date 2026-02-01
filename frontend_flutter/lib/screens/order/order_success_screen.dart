@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../home/home_screen.dart';
+import '../../controllers/theme_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
@@ -9,8 +10,13 @@ class OrderSuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    final themeController = Get.find<ThemeController>();
+
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
+
+      return Scaffold(
+        backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -81,6 +87,7 @@ class OrderSuccessScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
+      );
+    });
   }
 }

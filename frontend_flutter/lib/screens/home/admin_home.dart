@@ -8,6 +8,7 @@ import '../admin/admin_products_screen.dart';
 import '../admin/admin_orders_screen.dart';
 import '../admin/admin_users_screen.dart';
 import '../admin/admin_settings_screen.dart';
+import '../../controllers/theme_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
@@ -57,9 +58,18 @@ class _AdminHomeState extends State<AdminHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    final themeController = Get.find<ThemeController>();
+
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
+
+      return Scaffold(
+        backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: BrandAppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(AppSpacing.sm),
+          child: Image.asset("assets/logo/Marti Logo.png"),
+        ),
         title: 'Admin Dashboard',
         subtitle: 'Management Terminal',
         actions: [
@@ -150,10 +160,10 @@ class _AdminHomeState extends State<AdminHome> {
                         Container(
                           padding: const EdgeInsets.all(AppSpacing.md),
                           decoration: BoxDecoration(
-                            color: AppColors.veryLightBlue,
+                            color: isDark ? AppColors.darkBlue : AppColors.veryLightBlue,
                             borderRadius: BorderRadius.circular(AppRadius.md),
                           ),
-                          child: const Icon(Icons.settings_outlined, color: AppColors.primaryBlue),
+                          child: Icon(Icons.settings_outlined, color: isDark ? AppColors.lightOrange : AppColors.primaryBlue),
                         ),
                         const SizedBox(width: AppSpacing.md),
                         Expanded(
@@ -182,7 +192,8 @@ class _AdminHomeState extends State<AdminHome> {
                 ],
               ),
             ),
-    );
+      );
+    });
   }
 
   @override

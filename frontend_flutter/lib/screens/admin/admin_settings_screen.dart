@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../services/api_service.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/theme_controller.dart';
 import '../../utils/theme.dart';
 import '../../widgets/custom_widgets.dart';
 
@@ -70,11 +71,16 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return LoadingOverlay(
-      isLoading: isSaving,
-      message: "Saving settings...",
-      child: Scaffold(
-        backgroundColor: AppColors.background,
+    final themeController = Get.find<ThemeController>();
+
+    return Obx(() {
+      final isDark = themeController.isDarkMode;
+
+      return LoadingOverlay(
+        isLoading: isSaving,
+        message: "Saving settings...",
+        child: Scaffold(
+          backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
         appBar: const BrandAppBar(
           title: 'Global Settings',
           subtitle: 'Configure app-wide parameters',
@@ -159,6 +165,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                 ),
               ),
       ),
-    );
+      );
+    });
   }
 }

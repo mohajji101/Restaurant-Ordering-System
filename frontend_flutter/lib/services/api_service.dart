@@ -173,6 +173,30 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
+  static Future<Map<String, dynamic>> createUser(
+    String token, {
+    required String name,
+    required String email,
+    required String password,
+    required String role,
+  }) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/admin/users"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode({
+        "name": name,
+        "email": email,
+        "password": password,
+        "role": role,
+      }),
+    );
+
+    return jsonDecode(response.body);
+  }
+
   // =====================
   // SETTINGS
   // =====================

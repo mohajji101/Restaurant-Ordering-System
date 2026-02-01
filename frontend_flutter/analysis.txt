@@ -1,0 +1,63 @@
+Analyzing frontend_flutter...                                   
+
+   info - Don't invoke 'print' in production code - lib\controllers\cart_controller.dart:42:7 - avoid_print
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\admin\admin_orders_screen.dart:45:38 - non_type_as_type_argument
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\admin\admin_products_screen.dart:253:23 - deprecated_member_use
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\admin\admin_products_screen.dart:345:38 - non_type_as_type_argument
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\admin\admin_settings_screen.dart:59:35 - use_build_context_synchronously
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\admin\admin_settings_screen.dart:73:38 - non_type_as_type_argument
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\admin\admin_users_screen.dart:177:38 - non_type_as_type_argument
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\auth\login_screen.dart:76:38 - non_type_as_type_argument
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\auth\register_screen.dart:118:38 - non_type_as_type_argument
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\cart\cart_screen.dart:24:38 - non_type_as_type_argument
+   info - Don't use 'BuildContext's across async gaps - lib\screens\cart\cart_screen.dart:114:55 - use_build_context_synchronously
+  error - Expected to find ')' - lib\screens\cart\cart_screen.dart:127:8 - expected_token
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\home\admin_home.dart:60:38 - non_type_as_type_argument
+  error - The method '_DashboardCard' isn't defined for the type '_AdminHomeState' - lib\screens\home\admin_home.dart:106:23 - undefined_method
+  error - The method '_DashboardCard' isn't defined for the type '_AdminHomeState' - lib\screens\home\admin_home.dart:116:23 - undefined_method
+  error - The method '_DashboardCard' isn't defined for the type '_AdminHomeState' - lib\screens\home\admin_home.dart:125:23 - undefined_method
+  error - The method '_DashboardCard' isn't defined for the type '_AdminHomeState' - lib\screens\home\admin_home.dart:134:23 - undefined_method
+  error - Expected to find ';' - lib\screens\home\admin_home.dart:191:3 - expected_token
+warning - Dead code - lib\screens\home\admin_home.dart:193:3 - dead_code
+  error - Expected to find ')' - lib\screens\home\admin_home.dart:193:3 - expected_token
+warning - The declaration 'dispose' isn't referenced - lib\screens\home\admin_home.dart:194:8 - unused_element
+  error - Classes can't be declared inside other classes - lib\screens\home\admin_home.dart:200:1 - class_in_class
+  error - Expected a class member - lib\screens\home\admin_home.dart:200:22 - expected_class_member
+   info - The variable name 'StatelessWidget' isn't a lowerCamelCase identifier - lib\screens\home\admin_home.dart:200:30 - non_constant_identifier_names
+  error - Methods must have an explicit list of parameters - lib\screens\home\admin_home.dart:200:30 - missing_method_parameters
+  error - The name '_DashboardCard' isn't a class - lib\screens\home\admin_home.dart:207:9 - creation_with_non_type
+   info - 'required' is deprecated and shouldn't be used. In Dart 2.12 and later, use the built-in `required` keyword to mark a named parameter as required - lib\screens\home\admin_home.dart:208:5 - deprecated_member_use
+  error - Expected to find ',' - lib\screens\home\admin_home.dart:208:14 - expected_token
+  error - The getter 'title' isn't defined for the type '_AdminHomeState' - lib\screens\home\admin_home.dart:208:19 - undefined_getter
+   info - 'required' is deprecated and shouldn't be used. In Dart 2.12 and later, use the built-in `required` keyword to mark a named parameter as required - lib\screens\home\admin_home.dart:209:5 - deprecated_member_use
+  error - Expected to find ',' - lib\screens\home\admin_home.dart:209:14 - expected_token
+  error - The getter 'value' isn't defined for the type '_AdminHomeState' - lib\screens\home\admin_home.dart:209:19 - undefined_getter
+   info - 'required' is deprecated and shouldn't be used. In Dart 2.12 and later, use the built-in `required` keyword to mark a named parameter as required - lib\screens\home\admin_home.dart:210:5 - deprecated_member_use
+  error - Expected to find ',' - lib\screens\home\admin_home.dart:210:14 - expected_token
+  error - The getter 'icon' isn't defined for the type '_AdminHomeState' - lib\screens\home\admin_home.dart:210:19 - undefined_getter
+   info - 'required' is deprecated and shouldn't be used. In Dart 2.12 and later, use the built-in `required` keyword to mark a named parameter as required - lib\screens\home\admin_home.dart:211:5 - deprecated_member_use
+  error - Expected to find ',' - lib\screens\home\admin_home.dart:211:14 - expected_token
+  error - The getter 'color' isn't defined for the type '_AdminHomeState' - lib\screens\home\admin_home.dart:211:19 - undefined_getter
+   info - 'required' is deprecated and shouldn't be used. In Dart 2.12 and later, use the built-in `required` keyword to mark a named parameter as required - lib\screens\home\admin_home.dart:212:5 - deprecated_member_use
+  error - Expected to find ',' - lib\screens\home\admin_home.dart:212:14 - expected_token
+  error - The getter 'onTap' isn't defined for the type '_AdminHomeState' - lib\screens\home\admin_home.dart:212:19 - undefined_getter
+warning - The declaration 'build' isn't referenced - lib\screens\home\admin_home.dart:216:10 - unused_element
+  error - The final variable 'onTap' can't be read because it's potentially unassigned at this point - lib\screens\home\admin_home.dart:218:14 - read_potentially_unassigned_final
+  error - The final variable 'color' can't be read because it's potentially unassigned at this point - lib\screens\home\admin_home.dart:227:22 - read_potentially_unassigned_final
+  error - The final variable 'icon' can't be read because it's potentially unassigned at this point - lib\screens\home\admin_home.dart:230:25 - read_potentially_unassigned_final
+  error - The final variable 'color' can't be read because it's potentially unassigned at this point - lib\screens\home\admin_home.dart:230:38 - read_potentially_unassigned_final
+  error - The final variable 'value' can't be read because it's potentially unassigned at this point - lib\screens\home\admin_home.dart:234:13 - read_potentially_unassigned_final
+  error - The final variable 'title' can't be read because it's potentially unassigned at this point - lib\screens\home\admin_home.dart:238:13 - read_potentially_unassigned_final
+  error - Expected to find ';' - lib\screens\home\admin_home.dart:244:5 - expected_token
+  error - Expected an identifier - lib\screens\home\admin_home.dart:244:6 - missing_identifier
+  error - Unexpected text ';' - lib\screens\home\admin_home.dart:244:6 - unexpected_token
+   info - Unnecessary empty statement - lib\screens\home\admin_home.dart:244:7 - empty_statements
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\home\home_screen.dart:38:38 - non_type_as_type_argument
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\home\home_screen.dart:119:38 - non_type_as_type_argument
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\order\my_orders_screen.dart:16:38 - non_type_as_type_argument
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\order\order_detail_screen.dart:55:38 - non_type_as_type_argument
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\order\order_success_screen.dart:12:38 - non_type_as_type_argument
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\product\product_detail_screen.dart:29:38 - non_type_as_type_argument
+  error - The name 'ThemeController' isn't a type, so it can't be used as a type argument - lib\screens\profile\profile_screen.dart:15:38 - non_type_as_type_argument
+
+59 issues found. (ran in 1.7s)
