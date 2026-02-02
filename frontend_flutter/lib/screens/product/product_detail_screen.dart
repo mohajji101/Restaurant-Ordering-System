@@ -131,92 +131,102 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    product['title'] ?? 'Untitled',
-                                    style: AppTextStyles.h2,
-                                  ),
-                                  const SizedBox(height: AppSpacing.xs),
-                                  const StatusBadge(
-                                    text: "Popular Choice",
-                                    color: AppColors.primaryOrange,
-                                    icon: Icons.star,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Text(
-                              "\$${price.toStringAsFixed(2)}",
-                              style: AppTextStyles.price.copyWith(fontSize: 24),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: AppSpacing.lg),
-
-                        // DESCRIPTION
-                        Text(
-                          product['description'] ?? "Enjoy our freshly prepared delicious meal made with high quality ingredients and traditional recipes.",
-                          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey),
-                        ),
-
-                        const SizedBox(height: AppSpacing.lg),
-
-                        // ADJUSTMENTS
-                        Row(
-                          children: [
-                            // Portion
-                            Column(
+                        Expanded(
+                          child: SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text("Portion", style: TextStyle(fontWeight: FontWeight.bold)),
-                                const SizedBox(height: AppSpacing.xs),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: AppColors.veryLightBlue,
-                                    borderRadius: BorderRadius.circular(AppRadius.md),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.remove, size: 20, color: AppColors.primaryBlue),
-                                        onPressed: () {
-                                          if (portion > 1) setState(() => portion--);
-                                        },
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            product['title'] ?? 'Untitled',
+                                            style: AppTextStyles.h2,
+                                          ),
+                                          const SizedBox(height: AppSpacing.xs),
+                                          const StatusBadge(
+                                            text: "Popular Choice",
+                                            color: AppColors.primaryOrange,
+                                            icon: Icons.star,
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        portion.toString(),
-                                        style: AppTextStyles.h4,
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.add, size: 20, color: AppColors.primaryBlue),
-                                        onPressed: () => setState(() => portion++),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                    Text(
+                                      "\$${price.toStringAsFixed(2)}",
+                                      style: AppTextStyles.price.copyWith(fontSize: 24),
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: AppSpacing.lg),
+
+                                // DESCRIPTION
+                                Text(
+                                  product['description'] ?? "Enjoy our freshly prepared delicious meal made with high quality ingredients and traditional recipes.",
+                                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey),
+                                ),
+
+                                const SizedBox(height: AppSpacing.lg),
+
+                                // ADJUSTMENTS
+                                Row(
+                                  children: [
+                                    // Portion
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text("Portion", style: TextStyle(fontWeight: FontWeight.bold)),
+                                        const SizedBox(height: AppSpacing.xs),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: AppColors.veryLightBlue,
+                                            borderRadius: BorderRadius.circular(AppRadius.md),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              IconButton(
+                                                icon: const Icon(Icons.remove, size: 20, color: AppColors.primaryBlue),
+                                                onPressed: () {
+                                                  if (portion > 1) setState(() => portion--);
+                                                },
+                                              ),
+                                              Text(
+                                                portion.toString(),
+                                                style: AppTextStyles.h4,
+                                              ),
+                                              IconButton(
+                                                icon: const Icon(Icons.add, size: 20, color: AppColors.primaryBlue),
+                                                onPressed: () => setState(() => portion++),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: AppSpacing.lg),
+                                
+                                // Advice Card
+                                const AdviceCard(
+                                  title: "Make it a Meal!",
+                                  message: "Add a side of fries and a drink for just \$3.99 more.",
+                                  icon: Icons.fastfood_outlined,
+                                  color: AppColors.primaryOrange,
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
 
-                        const SizedBox(height: AppSpacing.lg),
-                        
-                        // Advice Card
-                        const AdviceCard(
-                          title: "Make it a Meal!",
-                          message: "Add a side of fries and a drink for just \$3.99 more.",
-                          icon: Icons.fastfood_outlined,
-                          color: AppColors.primaryOrange,
-                        ),
-
-                        const Spacer(),
+                        const SizedBox(height: AppSpacing.md),
 
                         // 💰 ADD TO CART
                         Row(
@@ -240,11 +250,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               child: BrandButton(
                                 text: "Add to Cart",
                                 onPressed: () {
+                                  final String? id = product['_id'] ?? product['id'];
+                                  final String title = product['title'] ?? 'Untitled';
+                                  final String image = product['image'] ?? '';
+
+                                  if (id == null) {
+                                    BrandSnackBar.showError(context, "Product ID missing");
+                                    return;
+                                  }
+
                                   Get.find<CartController>().addItem(
                                     CartItemModel(
-                                      id: product['_id'],
-                                      title: product['title'],
-                                      image: product['image'],
+                                      id: id,
+                                      title: title,
+                                      image: image,
                                       price: price,
                                       quantity: portion,
                                     ),

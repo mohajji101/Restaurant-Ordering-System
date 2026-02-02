@@ -62,7 +62,7 @@ class CartController extends GetxController {
   void addItem(CartItemModel item) {
     final index = items.indexWhere((e) => e.id == item.id);
     if (index >= 0) {
-      items[index].quantity.value++;
+      items[index].quantity.value += item.quantity.value;
     } else {
       items.add(item);
     }
